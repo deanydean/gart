@@ -1,0 +1,13 @@
+#!/bin/bash
+# Run the bot
+
+# Make sure we're groovy enough
+which groovy > /dev/null || echo "Cannot find groovy"
+
+# Setup the environment
+[ -z $BOT_HOME ] && BOT_HOME="."
+CLASSPATH="$BOT_HOME/bot-core.jar:$CLASSPATH"
+export BOT_HOME CLASSPATH
+
+# Start the bot
+groovy $BOT_HOME/bot.groovy $@
