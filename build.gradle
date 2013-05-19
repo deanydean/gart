@@ -1,6 +1,12 @@
 apply plugin: "groovy"
+apply plugin: "maven"
+
+// 
+group = "org.github.deanydean"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
