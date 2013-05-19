@@ -19,4 +19,4 @@ Running
 
 To run a bot:
 
-`$ bot`
+`$ ./bot`
