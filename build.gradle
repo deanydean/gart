@@ -1,7 +1,7 @@
 apply plugin: "groovy"
 apply plugin: "maven"
 
-// 
+// Maven package info 
 group = "org.github.deanydean"
 version = "1.0.0-SNAPSHOT"
 

@@ -34,21 +34,26 @@ public class ServiceManager {
         this.scriptEngine = new GroovyScriptEngine(roots as URL[])
 
         // Detect all services
+        def scripts = []
         for(scriptsDir in config.scriptsDirs){
             def dir = new File(scriptsDir).list(
-                    [accept:{d, f-> f ==~ /.*?\.groovy*/ }] as FilenameFilter)
-                        .each { f ->
-                try{
-                    // Create the class for the script
-                    def serviceClass = this.scriptEngine.loadScriptByName(f);
+                [accept:{d, f-> f ==~ /.*?\.groovy*/ }] as FilenameFilter)
+                    .each { f ->
+                        scripts << f
+                    }
+        }
+        
+        scripts.sort().each { script ->
+            try{
+                // Create the class for the script
+                def serviceClass = this.scriptEngine.loadScriptByName(script);
 
-                    // Create an instance
-                    services << serviceClass.newInstance()
-                }catch(ScriptException se){
-                    LOG.error("ScriptException for {0} : {1}", f, se);
-                }catch(ResourceException re){
-                    LOG.error("ResourceException for {0} : {1}", f, re);
-                }
+                // Create an instance
+                services << serviceClass.newInstance()
+            }catch(ScriptException se){
+                LOG.error("ScriptException for {0} : {1}", f, se);
+            }catch(ResourceException re){
+                LOG.error("ResourceException for {0} : {1}", f, re);
             }
         }
     }
