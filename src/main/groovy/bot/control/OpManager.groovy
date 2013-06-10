@@ -52,14 +52,13 @@ class OpManager {
             // Get the op info
             def comm = commData[1]
             LOG.info("Received op comm ${comm}")
-            def theOp = comm.id
                 
             // Get the args for script
             def args = comm.get("arg")
             if(!args) args = []
             else if(args instanceof String) args = [ args ]
                 
-            runOp(theOp, args)
+            perform(args)
             
             // TODO: Async return result
         })
@@ -72,12 +71,12 @@ class OpManager {
     }
     
     public perform(args){
-        // Work out if we have a script for the commands:
+        // Work out if we have a script for the command
         def scriptName = null
         def op = []
         args.find { arg ->
             op << arg
-            def name = op.join("-")+".groovy"
+            def name = op.join("/")+".groovy"
             
             try{
                 this.scriptEngine.loadScriptByName(name)

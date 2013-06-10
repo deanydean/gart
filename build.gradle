@@ -2,8 +2,8 @@ apply plugin: "groovy"
 apply plugin: "maven"
 
 // Maven package info 
-group = "org.github.deanydean"
-version = "1.0.0-SNAPSHOT"
+group = "com.github.deanydean"
+version = "0.1"
 
 repositories {
     mavenLocal()
