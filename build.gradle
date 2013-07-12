@@ -1,25 +1,29 @@
 apply plugin: "groovy"
-apply plugin: "maven"
-
-// Maven package info 
-group = "com.github.deanydean"
-version = "0.1"
 
 repositories {
     mavenLocal()
     mavenCentral()
 }
 
-// Uber jar...
-jar {
+// Build deps jar...
+task depjar(type: Jar){
+    archiveName="bot-deps.jar"
+    exclude "bot/**/*"
     from { 
-        configurations.compile.collect { 
+        configurations.compile.collect {
             it.isDirectory() ? it : zipTree(it)
         } 
     }
 }
+assemble.dependsOn depjar
 
 dependencies {
-    groovy group: 'org.codehaus.groovy', name: 'groovy', version: '2.1.3'
-    compile group: 'org.codehaus.gpars', name: 'gpars', version: '1.0.0'
+    groovy group: 'org.codehaus.groovy', name: 'groovy', version: '2.1.5'
+    compile group: 'org.codehaus.gpars', name: 'gpars', version: '1.+'
+    compile group: 'org.twitter4j', name: 'twitter4j-core', version: '3.+'
+
+    // For groovysh support
+    compile group: 'org.codehaus.groovy', name: 'groovy-groovysh', version: '2.1.5'
+    compile group: 'jline', name: 'jline', version: '1.+'
+    compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.+'
 }
