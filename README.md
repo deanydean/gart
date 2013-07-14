@@ -14,6 +14,14 @@ To build the bot core, use gradle:
 
 `$ gradle build`
 
+Configuring
+-----------
+To configure the bot:
+
+`$ cp bot.conf.template bot.conf`
+
+And then edit bot.conf with your favourite text editor.
+
 Running
 -------
 
