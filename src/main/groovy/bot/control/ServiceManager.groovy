@@ -30,15 +30,17 @@ public class ServiceManager {
         def scriptsDirs = config.scriptsDirs
         for(scriptsDir in scriptsDirs)
             roots << new File(Bot.BOT_HOME+"/"+scriptsDir).toURL()
-        
+       
+        Bot.LOG.debug("Loading service scripts from ${roots}")
         this.scriptEngine = new GroovyScriptEngine(roots as URL[])
 
         // Detect all services
         def scripts = []
         for(scriptsDir in config.scriptsDirs){
-            def dir = new File(scriptsDir).list(
+            def dir = new File(Bot.BOT_HOME+"/"+scriptsDir).list(
                 [accept:{d, f-> f ==~ /.*?\.groovy*/ }] as FilenameFilter)
                     .each { f ->
+                        Bot.LOG.debug("Got service $f")
                         scripts << f
                     }
         }
@@ -49,11 +51,12 @@ public class ServiceManager {
                 def serviceClass = this.scriptEngine.loadScriptByName(script);
 
                 // Create an instance
+                Bot.LOG.debug("Adding service ${serviceClass.getName()}")
                 services << serviceClass.newInstance()
             }catch(ScriptException se){
-                LOG.error("ScriptException for {0} : {1}", f, se);
+                Bot.LOG.error("ScriptException for {0} : {1}", f, se);
             }catch(ResourceException re){
-                LOG.error("ResourceException for {0} : {1}", f, re);
+                Bot.LOG.error("ResourceException for {0} : {1}", f, re);
             }
         }
     }
