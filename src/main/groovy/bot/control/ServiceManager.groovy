@@ -65,7 +65,11 @@ public class ServiceManager {
         services.each { service ->
             if(service.enabled){
                 Bot.LOG.info "    * Starting ${service.name}...."
-                service.start()
+                try{
+                    service.start()
+                }catch(e){
+                    Bot.LOG.error "Failed to start ${service.name}: $e"
+                }
             }
         }
     }
@@ -74,7 +78,11 @@ public class ServiceManager {
         services.each { service ->
             if(service.enabled){
                 Bot.LOG.info "    * Stopping ${service.name}...."
-                service.stop()
+                try{
+                    service.stop()
+                }catch(e){
+                    Bot.LOG.error "Failed to stop ${service.name}: $e"
+                }
             }
         }
     }
