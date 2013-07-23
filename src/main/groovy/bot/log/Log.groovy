@@ -42,6 +42,7 @@ class Log {
 
     @SuppressWarnings("NonConstantLogger")
     private Logger logger
+    private LogHandler handler
     
     public Log(String name){
         this.name = name
@@ -66,15 +67,13 @@ class Log {
         for(Handler h : handlers){
             this.logger.removeHandler(h)
         }
-        def handler = new LogHandler();
-        this.logger.addHandler(handler)
+        this.handler = new LogHandler();
+        this.logger.addHandler(this.handler)
         this.logger.setUseParentHandlers(false)
         
         // Set levels
-        if(this.level){
-            this.logger.setLevel(Level.parse(level))
-            handler.setLevel(Level.parse(level))
-        }
+        if(this.level)
+            this.setLevel(this.level)
         
         if(this.async){
             if(this.logger != getLogger(CommsExchange.class)){
@@ -83,6 +82,13 @@ class Log {
                 this.async = false
             }
         }
+    }
+
+    public void setLevel(level){
+        def logLevel = Level.parse(level)
+        this.logger.setLevel(logLevel)
+        this.handler.setLevel(logLevel)
+        this.level = level
     }
     
     public void setRepeatLock(boolean lock){
