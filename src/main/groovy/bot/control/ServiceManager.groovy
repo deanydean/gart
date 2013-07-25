@@ -68,6 +68,7 @@ public class ServiceManager {
                 service.start()
             }
         }
+        Bot.LOG.info "Services started"
     }
 
     public void stopServices(){
@@ -77,5 +78,6 @@ public class ServiceManager {
                 service.stop()
             }
         }
+        Bot.LOG.info "Services stopped"
     }
 }
