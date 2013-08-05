@@ -45,7 +45,7 @@ public class Botsh extends Groovysh {
         io.setVerbosity(IO.Verbosity.QUIET)
         try{
             return super.run(args)
-        }catch(Throwable e){
+        }catch(e){
             Bot.LOG.error "${e.getMessage()}"
             Bot.LOG.debug "$e"
         }
@@ -53,6 +53,10 @@ public class Botsh extends Groovysh {
 
     public String renderPrompt(){
         return "BOT << "
+    }
+
+    public void displayError(e){
+        Bot.LOG.error "$e"
     }
 
 }
