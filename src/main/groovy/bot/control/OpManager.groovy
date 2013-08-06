@@ -32,6 +32,7 @@ class OpManager {
     private config = Bot.CONFIG.ops
     private opComm
     private scriptEngine
+    private bot
     
     public OpManager(){
         // Create the roots....
@@ -44,6 +45,10 @@ class OpManager {
             
         // Load the script engine
         this.scriptEngine = new GroovyScriptEngine(roots as URL[]);
+    }
+
+    public adopt(bot){
+        this.bot = bot
     }
     
     public start(){
@@ -103,6 +108,7 @@ class OpManager {
         // Run the op script
         def binding = new Binding()
         binding.setVariable("args", args)
+        binding.setVariable("BOT", this.bot)
         this.scriptEngine.run(name, binding)
         
         if(binding.hasVariable("result"))

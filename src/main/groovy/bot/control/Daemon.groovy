@@ -15,6 +15,8 @@
  */
 package bot.control
 
+import bot.Bot
+
 /**
  * The main bot daemon
  * @author deanydean

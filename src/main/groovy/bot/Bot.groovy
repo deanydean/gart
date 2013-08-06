@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package bot;
+package bot
 
 import bot.control.*
 import bot.log.*
@@ -30,7 +30,8 @@ class Bot {
     def static final CONFIG = new ConfigSlurper().parse(
         new File("$BOT_HOME/bot.conf").toURL())
     def static final LOG = new Log(Bot.class)
-    def static IS_DAEMON = false;
+    def static IS_DAEMON = false
+    def static BOT = null
     
     def options
     def opManager
@@ -42,11 +43,12 @@ class Bot {
         this.args = new ArrayList(this.options.arguments())
           
         this.opManager = new OpManager()
+        this.opManager.adopt(this)
         
         // Parse Ds
-        def params = this.options.Ds;
+        def params = this.options.Ds
         if(params){
-            for(def i=0;i<params.size();i+=2){
+            for(def i=0; i<params.size(); i+=2){
                 CONFIG[params[i]] = params[i+1]
             }
         }
@@ -78,7 +80,7 @@ class Bot {
             }else if(result.success){
                 LOG.info result.message
             }else{
-                throw result.message;
+                throw result.message
             }
         }catch(e){
             LOG.error "Oh dear! ${e.getMessage()}"

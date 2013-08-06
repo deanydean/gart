@@ -41,6 +41,13 @@ public class Botsh extends Groovysh {
             createDefaultRegistrar())
     }
 
+    public Botsh(bindings){
+        super(Thread.currentThread().contextClassLoader,
+            new Binding(bindings), 
+            new IO(System.in, System.out, System.err),
+            createDefaultRegistrar())
+    }
+
     int run(final String[] args){
         io.setVerbosity(IO.Verbosity.QUIET)
         try{
