@@ -1,6 +1,7 @@
 build
 .gradle
 bot.conf
+bin
 ops
 services
 www

@@ -27,6 +27,7 @@ class CommandExecutor {
     def ident
     def command
     def workingDir
+    def suppressOutput = false
     
     public CommandExecutor(ident, command){
         this.ident = ident
@@ -36,7 +37,7 @@ class CommandExecutor {
     public setWorkingDir(String workingDir){
         this.workingDir = workingDir
     }
-    
+
     public exec(){
         def start = System.currentTimeMillis()
        
@@ -51,11 +52,14 @@ class CommandExecutor {
         def took = System.currentTimeMillis()-start
 
         def result = proc.exitValue()
-        if(result == 0){
-            Bot.LOG.info "${this.ident} completed @ ${new Date()} (took ${took}ms)"
-        }else{
-            Bot.LOG.error "FAILED ${this.ident}!"
-            Bot.LOG.error "return code: ${proc.exitValue()}"
+        if(!this.suppressOutput){
+            if(result == 0){
+                def timeInfo = "${new Date()} (took ${took}ms)"
+                Bot.LOG.info "${this.ident} completed @ $timeInfo"
+            }else{
+                Bot.LOG.error "FAILED ${this.ident}!"
+                Bot.LOG.error "return code: ${proc.exitValue()}"
+            }
         }
         return result
     }
