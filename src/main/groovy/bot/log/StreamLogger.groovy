@@ -16,8 +16,9 @@
 package bot.log
 
 import java.util.logging.Level
+
 /**
- *
+ * Logs all content from a stream
  * @author deanydean
  */
 class StreamLogger implements Runnable {
