@@ -59,8 +59,15 @@ class OpManager {
             LOG.info("Received op comm ${comm}")
                 
             // Get the args for script
-            def args = comm.get("arg")
-            if(!args) args = []
+            def args = comm.get("args")
+            if(!args){
+                if(comm.id.count(".") > 0){
+                    // Split the comm name by "."
+                    args = comm.id.tokenize(".")
+                }else{
+                    args = []
+                }
+            }
             else if(args instanceof String) args = [ args ]
                 
             perform(args)
