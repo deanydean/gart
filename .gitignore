@@ -5,4 +5,5 @@ bin
 ops
 services
 www
+.restart
 *.swp

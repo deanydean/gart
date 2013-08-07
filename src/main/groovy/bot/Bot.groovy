@@ -15,6 +15,7 @@
  */
 package bot
 
+import bot.comm.*
 import bot.control.*
 import bot.log.*
 
@@ -35,6 +36,7 @@ class Bot {
     
     def options
     def opManager
+    def daemon
     def op
     def args
     
@@ -52,6 +54,16 @@ class Bot {
                 CONFIG[params[i]] = params[i+1]
             }
         }
+
+        // Subscribe to bot comms
+        new Communicator({ commData ->
+            def comm = commData[1]
+            LOG.info("Bot received comm ${comm}")
+
+            if(comm.id == "restart"){
+                this.restart()
+            }
+        }).subscribeTo("bot");
     }
     
     String toString(){
@@ -66,8 +78,20 @@ class Bot {
     void start(){
         IS_DAEMON = true
         LOG.info "Bot daemon started"
-        new Daemon().start().join()
+        this.daemon = new Daemon().start()
+        this.daemon.join()
         LOG.debug "Daemon has ended"
+    }
+
+    void restart(){
+        // Create restart file.....
+        new File("${BOT_HOME}/.restart").createNewFile()
+        
+        if(IS_DAEMON){
+            this.daemon.stop()
+        }else{
+            System.exit(0)
+        }
     }
     
     void op(){

@@ -10,5 +10,20 @@ PATH="$BOT_HOME/bin:$PATH"
 CLASSPATH="$BOT_HOME/src/main/groovy:$BOT_HOME/src/main/resources:$BOT_HOME/build/libs/bot-deps.jar:$CLASSPATH"
 export BOT_HOME CLASSPATH PATH
 
-# Start the bot
-groovy $BOT_HOME/bot.groovy $@
+startbot=1
+while [ $startbot -eq 1 ]; do
+    # Start the bot
+    groovy $BOT_HOME/bot.groovy $@
+    
+    # By default, we've had enough.
+    startbot=0
+
+    # Check if bot is just restarting
+    [ -e ${BOT_HOME}/.restart ] && {
+        startbot=1
+        rm ${BOT_HOME}/.restart
+    }
+
+    continue
+done
+
