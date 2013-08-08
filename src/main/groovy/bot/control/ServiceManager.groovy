@@ -51,7 +51,7 @@ public class ServiceManager {
                 def serviceClass = this.scriptEngine.loadScriptByName(script);
 
                 // Create an instance
-                Bot.LOG.debug("Adding service ${serviceClass.getName()}")
+                Bot.LOG.debug "Adding service ${serviceClass.getName()}"
                 services << serviceClass.newInstance()
             }catch(ScriptException se){
                 Bot.LOG.error("ScriptException for {0} : {1}", f, se);
@@ -62,6 +62,7 @@ public class ServiceManager {
     }
 
     public void startServices(){
+        Bot.LOG.info "Starting services...."
         services.each { service ->
             if(service.enabled){
                 Bot.LOG.info "    * Starting ${service.name}...."
@@ -72,6 +73,7 @@ public class ServiceManager {
     }
 
     public void stopServices(){
+        Bot.LOG.info "Stopping services...."
         services.each { service ->
             if(service.enabled){
                 Bot.LOG.info "    * Stopping ${service.name}...."
