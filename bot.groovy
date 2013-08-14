@@ -19,6 +19,7 @@ import bot.Bot;
 def cli = new CliBuilder(usage: "bot [options] <op> [args]")
 cli.D(args:2, valueSeparator:"=", argName:"property=value", 
     "Use value for given property")
+cli._(longOpt: "daemon", "Enable bot daemon")
 def options = cli.parse(args)
 
 // Run the bot

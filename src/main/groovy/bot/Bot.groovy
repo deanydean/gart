@@ -55,6 +55,11 @@ class Bot {
             }
         }
 
+        // Check if we're running in daemon mode.....
+        if(this.options.daemon){
+            this.daemon = new Daemon()
+        }
+
         // Subscribe to bot comms
         new Communicator({ commData ->
             def comm = commData[1]
@@ -71,15 +76,20 @@ class Bot {
     }
     
     void run(){
-        // Perform the required action
-        this.args.isEmpty() ? start() : op()
+        if(this.args.isEmpty() && !this.daemon){
+            // No args and no daemon, start the shell
+            LOG.info "Hello, Bot at your service. How can I help?"
+            this.args = [ "sh" ]
+            op()
+        }else{
+            start()
+        }
     }
     
     void start(){
         IS_DAEMON = true
         LOG.info "Bot daemon started"
-        this.daemon = new Daemon().start()
-        this.daemon.join()
+        this.daemon.start().join()
         LOG.debug "Daemon has ended"
     }
 
