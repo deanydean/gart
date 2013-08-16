@@ -32,20 +32,20 @@ class Bot {
         new File("$BOT_HOME/bot.conf").toURL())
     def static final LOG = new Log(Bot.class)
     def static IS_DAEMON = false
-    def static BOT = null
     
     def options
     def opManager
     def daemon
     def op
     def args
+    def botsh
     
     Bot(options){
         this.options = options
         this.args = new ArrayList(this.options.arguments())
           
         this.opManager = new OpManager()
-        this.opManager.adopt(this)
+        this.opManager.adopt(this).start()
         
         // Parse Ds
         def params = this.options.Ds
@@ -76,14 +76,10 @@ class Bot {
     }
     
     void run(){
-        if(this.args.isEmpty() && !this.daemon){
-            // No args and no daemon, start the shell
-            LOG.info "Hello, Bot at your service. How can I help?"
-            this.args = [ "sh" ]
+        if(this.args.isEmpty())
+            this.daemon ? start() : shell()
+        else
             op()
-        }else{
-            start()
-        }
     }
     
     void start(){
@@ -120,5 +116,15 @@ class Bot {
             LOG.error "Oh dear! ${e.getMessage()}"
             e.printStackTrace()
         }
+    }
+
+    private void shell(){
+        // Start the bot shell
+        this.botsh = new Botsh([
+            "BOT": this
+        ])
+
+        LOG.info "Hello, Bot at your service. How can I help?"
+        this.botsh.run()
     }
 }

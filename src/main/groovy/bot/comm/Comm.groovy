@@ -50,10 +50,12 @@ class Comm implements Serializable {
     
     public set(id, value){
         data[id] = value
+        return this
     }
     
     public publish(){
         CommExchange.publish(this);
+        return this
     }
     
     public String toString(){

@@ -82,7 +82,7 @@ class CommExchange {
         }
         
         if(!received){
-            LOG.debug "Comm unreceived ${comm.id}"
+            LOG.debug "Comm was undelivered ${comm.id}"
         }
     }   
 }

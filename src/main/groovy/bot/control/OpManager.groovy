@@ -33,6 +33,7 @@ class OpManager {
     private opComm
     private scriptEngine
     private bot
+    private running = false
     
     public OpManager(){
         // Create the roots....
@@ -49,37 +50,47 @@ class OpManager {
 
     public adopt(bot){
         this.bot = bot
-    }
-    
-    public start(){
-        // Create the op subscriber
-        this.opComm = new Communicator({ commData ->
-            // Get the op info
-            def comm = commData[1]
-            LOG.info("Received op comm ${comm}")
-                
-            // Get the args for script
-            def args = comm.get("args")
-            if(!args){
-                if(comm.id.count(".") > 0){
-                    // Split the comm name by "."
-                    args = comm.id.tokenize(".")
-                }else{
-                    args = []
-                }
-            }
-            else if(args instanceof String) args = [ args ]
-                
-            perform(args)
-            
-            // TODO: Async return result
-        })
-        this.opComm.subscribeTo("op")
         return this
     }
     
-    public stopService(){
+    public start(){
+        if(this.running) return this
+
+        if(!this.opComm){
+            // Create the op subscriber
+            this.opComm = new Communicator({ commData ->
+                // Get the op info
+                def comm = commData[1]
+                LOG.info("Received op comm ${comm}")
+                    
+                // Get the args for script
+                def args = comm.get("args")
+                if(!args){
+                    if(comm.id.count(".") > 0){
+                        // Split the comm name by "."
+                        args = comm.id.tokenize(".")
+                    }else{
+                        args = []
+                    }
+                }
+                else if(args instanceof String) args = [ args ]
+                
+                perform(args)
+            
+                // TODO: Async return result
+            })
+        }
+
+        this.opComm.subscribeTo("op")
+        this.running = true
+        return this
+    }
+    
+    public stop(){
+        if(!this.running) return
         this.opComm.unsubscribeFrom("op")
+        this.running = false
+        LOG.debug "OpManager not listening for op comms"
     }
     
     public perform(args){
