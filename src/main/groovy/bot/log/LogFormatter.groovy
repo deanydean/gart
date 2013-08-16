@@ -39,14 +39,27 @@ class LogFormatter extends Formatter {
     }
 
     public String info(String message, Object[] params){
-        return "BOT> ${MessageFormat.format(message, params)}\n"
+        try{
+            return "BOT> ${MessageFormat.format(message, params)}\n"
+        }catch(e){
+            return "BOT> $message $params\n"
+        }
     }
 
     public String error(LogRecord record){
-        return "ERROR: ${MessageFormat.format(record.getMessage(),record.getParameters())}\n";
+        try{
+            return "BOT> X  ${MessageFormat.format(record.getMessage(),record.getParameters())}\n"
+        }catch(e){
+            return "BOT> X  ${record.getMessage()} ${record.getParameters()}\n"
+        }
+
     }
 
     public String debug(LogRecord record){
-        return "DEBUG: ${MessageFormat.format(record.getMessage(),record.getParameters())}\n";
+        try{
+            return "BOT>>>  ${MessageFormat.format(record.getMessage(),record.getParameters())}\n"
+        }catch(e){
+            return "BOT>>>  ${record.getMessage()} ${record.getParameters()}\n"
+        }
     }
 }
