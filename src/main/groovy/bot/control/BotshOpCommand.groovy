@@ -8,10 +8,10 @@ import org.codehaus.groovy.tools.shell.*
 
 public class BotshOpCommand extends CommandSupport {
 
-    public static final OP_COMMAND_NAME = "op"
+    public static final OP_COMMAND_NAME = "bot"
 
     public BotshOpCommand(Shell shell){
-        super(shell, OP_COMMAND_NAME, ":")
+        super(shell, OP_COMMAND_NAME, "!")
     }
 
     public Object execute(List args){
