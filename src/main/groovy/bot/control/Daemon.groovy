@@ -25,7 +25,8 @@ class Daemon {
     
     private running = false
     private daemon = null
-    private serviceManager = new ServiceManager()
+    
+    def serviceManager = new ServiceManager()
     
     public Daemon start(){
         this.daemon = Thread.start("bot-daemon", {

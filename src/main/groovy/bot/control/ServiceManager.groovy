@@ -18,9 +18,9 @@ package bot.control
 import bot.Bot
 
 public class ServiceManager {
-    
+
     private config = Bot.CONFIG.services
-    private services = []
+    private services = [:]
     private scriptEngine
 
     public ServiceManager(){
@@ -51,8 +51,9 @@ public class ServiceManager {
                 def serviceClass = this.scriptEngine.loadScriptByName(script);
 
                 // Create an instance
-                Bot.LOG.debug "Adding service ${serviceClass.getName()}"
-                services << serviceClass.newInstance()
+                def service = serviceClass.newInstance()
+                Bot.LOG.debug "Adding service ${service.name}"
+                services[service.name] = service
             }catch(ScriptException se){
                 Bot.LOG.error("ScriptException for {0} : {1}", f, se);
             }catch(ResourceException re){
@@ -61,11 +62,27 @@ public class ServiceManager {
         }
     }
 
+    public void start(name){
+        if(services.containsKey(name)){
+            Bot.LOG.info "Starting ${name} service...."
+            services[name].start()
+        }else
+            Bot.LOG.error "Unknown service: ${name}" 
+    }
+
+    public void stop(name){
+        if(services.containsKey(name)){
+            Bot.LOG.info "Stopping ${name} service...."
+            services[name].stop()
+        }else
+            Bot.LOG.error "Unknown service: ${name}"
+    }
+
     public void startServices(){
         Bot.LOG.info "Starting services...."
-        services.each { service ->
+        services.each { name, service ->
             if(service.enabled){
-                Bot.LOG.info "    * Starting ${service.name}...."
+                Bot.LOG.info "    * Starting ${name}...."
                 service.start()
             }
         }
@@ -74,9 +91,9 @@ public class ServiceManager {
 
     public void stopServices(){
         Bot.LOG.info "Stopping services...."
-        services.each { service ->
+        services.each { name, service ->
             if(service.enabled){
-                Bot.LOG.info "    * Stopping ${service.name}...."
+                Bot.LOG.info "    * Stopping ${name}...."
                 service.stop()
             }
         }
