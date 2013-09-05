@@ -28,7 +28,9 @@ import java.nio.file.*
 class FilesystemWatch {
     
     public static final String FS_COMM = "fs"
-    public static final String FS_CHANGED = "fs.changed"
+    public static final String FS_CHANGED = "fs.ENTRY_MODIFY"
+    public static final String FS_CREATED = "fs.ENTRY_CREATE"
+    public static final String FS_DELETED = "fs.ENTRY_DELETE"
     
     public static final String FS_PATH = "fs.path"
     public static final String FS_CHANGETYPE = "fs.changetype"
@@ -39,7 +41,7 @@ class FilesystemWatch {
     def watcher = FS.newWatchService()
     def watchThread
     def watching = [:]
-    def subscriptionName
+    def location
     
     public FilesystemWatch(location){
         // Init the watch for this location
@@ -47,7 +49,7 @@ class FilesystemWatch {
         this.register(path)
 
         // Init the sub name
-        this.subscriptionName = getCommName(location)
+        this.location = location
 
         // Create a daemon thread than handles the nio2 events
         this.watchThread = Thread.startDaemon("fs-watcher for $location"){
@@ -57,10 +59,11 @@ class FilesystemWatch {
                 try{
                     for (def event : watchKey.pollEvents()) {
                         def file = dir.resolve(event.context())
-                        Bot.LOG.debug "fs-change: $path ${event.kind().name()}"
+                        def type = "${FS_COMM}.${event.kind().name()}"
+                        Bot.LOG.debug "fs-change: $type $path"
 
-                        def comm = new Comm(getCommName(location))
-                        comm.set(FS_CHANGETYPE, event.kind().name())
+                        def comm = new Comm(getCommName(type, location))
+                        comm.set(FS_CHANGETYPE, type)
                         comm.set(FS_PATH, file.toString())
                         comm.publish()
                     }
@@ -84,13 +87,13 @@ class FilesystemWatch {
         this.watching.put(key,location)
     }
 
-    public void addSubscriber(communicator){
+    public void addSubscriber(type, communicator){
         // Generate the event name for this
-        communicator.subscribeTo(this.subscriptionName)
+        communicator.subscribeTo(getCommName(type, this.location))
     }
 
-    public static String getCommName(location){
-        return "${FS_CHANGED}.${location}"
+    public static String getCommName(type, location){
+        return "${type}.${location}"
     }
 }
 

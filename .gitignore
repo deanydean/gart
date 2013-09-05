@@ -7,3 +7,4 @@ services
 www
 .restart
 *.swp
+/.nb-gradle/profiles/private/

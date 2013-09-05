@@ -27,7 +27,11 @@ class TimeTool {
     
     public interval(callback, interval){
         this.scheduledPool.scheduleWithFixedDelay(callback, 0, interval,
-            TimeUnit.MINUTES)
+            TimeUnit.SECONDS)
+    }
+
+    public delay(callback, delay){
+        this.scheduledPool.schedule(callback, delay, TimeUnit.SECONDS)
     }
     
     public cancelAll(){
