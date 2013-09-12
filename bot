@@ -5,7 +5,9 @@
 [ -z $BOT_HOME ] && BOT_HOME="."
 
 # Check for a bot environment
-[ -e $BOT_HOME/.botenv ] && { . ${BOT_HOME}/.botenv }
+[ -e $BOT_HOME/.botenv ] && { 
+    . ${BOT_HOME}/.botenv 
+}
 
 # Make sure we're groovy enough
 which groovy > /dev/null || echo "Cannot find groovy"
