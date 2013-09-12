@@ -6,7 +6,7 @@ repositories {
 }
 
 // Build deps jar...
-task depjar(type: Jar){
+task getdeps(type: Jar){
     archiveName="bot-deps.jar"
     exclude "bot/**/*"
     from { 
@@ -15,7 +15,7 @@ task depjar(type: Jar){
         } 
     }
 }
-assemble.dependsOn depjar
+assemble.dependsOn getdeps
 
 dependencies {
     groovy group: 'org.codehaus.groovy', name: 'groovy', version: '2.1.7'
