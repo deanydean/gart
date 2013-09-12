@@ -10,9 +10,9 @@ log {
 }
 
 ops {
-    scriptsDirs=["src/main/groovy/bot/ops/", "ops/"]
+    scriptsDirs=["src/main/groovy/bot/ops/", "bot-ext/ops/"]
 }
 
 services {
-    scriptsDirs=["src/main/groovy/bot/services/", "services/"]
+    scriptsDirs=["src/main/groovy/bot/services/", "bot-ext/services/"]
 }
