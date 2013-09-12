@@ -4,5 +4,6 @@ bot.conf
 www
 bot-ext
 .restart
+.botenv
 *.swp
 /.nb-gradle/profiles/private/
