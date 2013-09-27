@@ -6,7 +6,7 @@ which groovy > /dev/null || echo "Cannot find groovy"
 
 # Setup the environment
 [ -z $BOT_HOME ] && BOT_HOME="."
-PATH="$BOT_HOME/bin:$PATH"
+PATH="$BOT_HOME/bot-ext/scripts:$PATH"
 CLASSPATH="$BOT_HOME/src/main/groovy:$BOT_HOME/src/main/resources:$BOT_HOME/build/libs/bot-deps.jar:$BOT_CLASSPATH"
 export BOT_HOME CLASSPATH PATH
 
