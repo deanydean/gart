@@ -76,4 +76,10 @@ public class Botsh extends Groovysh {
         Bot.LOG.error "$e"
     }
 
+    public void displayBuffer(ArrayList buffer){
+        buffer.each {
+            Bot.LOG.info "BUFFER> $it"
+        }
+    }
+
 }
