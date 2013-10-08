@@ -9,13 +9,18 @@
     . ${BOT_HOME}/.botenv 
 }
 
-# Make sure we're groovy enough
-which groovy > /dev/null || echo "Cannot find groovy"
-
 # Setup the environment
 [ -d $BOT_HOME/bot-ext/scripts ] && PATH="$BOT_HOME/bot-ext/scripts:$PATH"
 CLASSPATH="$BOT_HOME/src/main/groovy:$BOT_HOME/src/main/resources:$BOT_HOME/build/libs/bot-deps.jar:$BOT_CLASSPATH"
 export BOT_HOME CLASSPATH PATH
+
+# Make sure we're groovy enough
+which groovy > /dev/null || {
+    [ -d ${BOT_HOME}/bot-ext/scripts ] && { 
+        . ${BOT_HOME}/bot-ext/scripts/get-in-the-groove.sh
+    }
+}
+
 
 startbot=1
 while [ $startbot -eq 1 ]; do

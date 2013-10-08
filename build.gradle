@@ -18,11 +18,11 @@ task getdeps(type: Jar){
 assemble.dependsOn getdeps
 
 dependencies {
-    groovy group: 'org.codehaus.groovy', name: 'groovy', version: '2.1.7'
     compile group: 'org.codehaus.gpars', name: 'gpars', version: '1.+'
     compile group: 'org.twitter4j', name: 'twitter4j-core', version: '3.+'
     compile group: 'javax.jmdns', name: 'jmdns', version: '3.+'
     compile group: 'org.glassfish.grizzly', name: 'grizzly-http-server', version: '2.+'
+    compile group: 'com.hazelcast', name: 'hazelcast', version: '3.+'
 
     // For groovysh support
     compile group: 'org.codehaus.groovy', name: 'groovy-groovysh', version: '2.1.7'
