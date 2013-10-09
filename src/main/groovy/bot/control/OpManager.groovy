@@ -94,6 +94,22 @@ class OpManager {
     }
     
     public perform(args){
+        // Split multiple ops
+        def ops = args.join(" ").split("and")
+        def results = []
+        def opsThreads = []
+        ops.each { op -> 
+            opsThreads << Thread.start {
+                results << performOp(op.trim().split(" ") as List)
+            }
+        }
+
+        // Wait for all threads to finish
+        opsThreads.each { it.join() }
+        return (results.size() == 1) ? results[0] : null
+    }
+
+    private performOp(args){    
         // Work out if we have a script for the command
         def scriptName = null
         def op = []
