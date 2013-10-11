@@ -27,6 +27,10 @@ class Daemon {
     private daemon = null
     
     def serviceManager = new ServiceManager()
+
+    public Daemon(){
+        this.serviceManager.level = 9
+    }
     
     public Daemon start(){
         this.daemon = Thread.start("bot-daemon", {
