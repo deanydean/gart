@@ -32,7 +32,7 @@ class Bot {
         new File("$BOT_HOME/bot.conf").toURL())
     def static final LOG = new Log(Bot.class)
     def static IS_DAEMON = false
-    
+
     def options
     def opManager
     def daemon
