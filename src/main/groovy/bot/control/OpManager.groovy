@@ -133,7 +133,7 @@ class OpManager {
         if(scriptName){
             return runOp(scriptName, args-op)
         }else{
-            LOG.error("I dont know {0}", args)
+            LOG.error("I dont know how to {0}", args.join(" "))
             return null
         }
     }
