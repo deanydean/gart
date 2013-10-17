@@ -22,6 +22,7 @@ public class ServiceManager {
     private config = Bot.CONFIG.services
     private level = 0
     private services = [:]
+    private serviceIndex = [:]
     private autoStart = false
     private scriptEngine
 
@@ -68,6 +69,9 @@ public class ServiceManager {
                         if(!services[9]) services[9] = [:]
                         services[9][service.name] = service
                     }
+
+                    // Add it to the service index
+                    serviceIndex[service.name] = service
                 }else{
                     Bot.LOG.error "Cannot load $service as it has no name"
                 }
@@ -151,5 +155,9 @@ public class ServiceManager {
         }
         Bot.LOG.info "Services stopped"
         autoStart = false
+    }
+
+    public get(name){
+        return serviceIndex[name]
     }
 }
