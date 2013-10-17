@@ -25,7 +25,7 @@ import bot.log.*
  * A communication exchange mechanism
  * @author deanydean
  */
-class CommExchange {
+class CommExchange extends Communicator {
     
     private static Log LOG = new Log(CommExchange.class);
     
@@ -35,8 +35,36 @@ class CommExchange {
         new ConcurrentHashMap<String,List<Communicator>>();
         
     def handlerCount = Bot.CONFIG.core.commThreads
-        
+
     private CommExchange(){
+        super({ commInfo ->
+            def comm = commInfo[1]
+            def components = comm.id.tokenize(".")
+        
+            boolean received = false
+            def name = ""
+        
+            for(String bit in components){
+                name+=bit
+                try{
+                    def communicators = CommExchange.instance.register[name]
+                    if(communicators && communicators.size() > 0){
+                        for(def communicator in communicators){
+                            Comm toPublish = comm.copyAndConsume(name)
+                            communicator.send(toPublish)
+                            received = true
+                        }
+                    }
+                }catch(err){
+                    LOG.error "Publish of $name failed : $err"
+                }
+                name+="."
+            }
+        
+            if(!received){
+                LOG.debug "Comm was undelivered ${comm.id}"
+            }
+        })
         Actors.defaultActorPGroup.resize handlerCount
     }
         
@@ -59,30 +87,6 @@ class CommExchange {
     }
     
     static void publish(Comm comm){
-        def components = comm.id.tokenize(".")
-        
-        boolean received = false
-        def name = ""
-        
-        for(String bit in components){
-            name+=bit
-            try{
-                def communicators = instance.register[name]
-                if(communicators && communicators.size() > 0){
-                    for(def communicator in communicators){
-                        Comm toPublish = comm.copyAndConsume(name)
-                        communicator.send(toPublish)
-                        received = true
-                    }
-                }
-            }catch(err){
-                LOG.error "Publish of $name failed : $err"
-            }
-            name+="."
-        }
-        
-        if(!received){
-            LOG.debug "Comm was undelivered ${comm.id}"
-        }
-    }   
+        instance.send(comm)
+    }
 }
