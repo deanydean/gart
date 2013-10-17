@@ -57,6 +57,9 @@ public class ServiceManager {
 
                 // Create an instance
                 def service = serviceClass.newInstance()
+                if(service.respondsTo("init"))
+                    service.init()
+
                 if(service.hasProperty("name")){
                     Bot.LOG.debug "Adding service ${service.name}"
 
@@ -114,7 +117,7 @@ public class ServiceManager {
         if(services[l] && services[l].containsKey(name)){
             try{
                 Bot.LOG.info "    * Starting ${name} service...."
-                services[l][name].start()
+                services[l][name].startService()
             }catch(e){
                 Bot.LOG.error("Could not start service {0} : {1}", name, e)
             }
@@ -127,7 +130,7 @@ public class ServiceManager {
         if(services[l] && services[l].containsKey(name)){
             try{
                 Bot.LOG.info "    * Stopping ${name} service...."
-                services[l][name].stop()
+                services[l][name].stopService()
             }catch(e){
                 Bot.LOG.error "Could not stop service ${name} : ${e}"
             }

@@ -74,6 +74,8 @@ class CommExchange extends Communicator {
         }else{
             instance.register[name] = [ communicator ]
         }
+
+        LOG.error "Subscribed $communicator to $name on $instance"
     }
     
     static void unsubscribe(String name, Communicator communicator){
