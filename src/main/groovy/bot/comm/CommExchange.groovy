@@ -26,6 +26,12 @@ import bot.log.*
  * @author deanydean
  */
 class CommExchange extends Communicator {
+
+    public static final COMMEX = "commex"
+    public static final SUBSCRIBE = "commex.subscribe"
+    public static final UNSUBSCRIBE = "commex.unsubscribe"
+    public static final COMMUNICATOR = "communicator"
+    public static final COMM_NAME = "comm.name"
     
     private static Log LOG = new Log(CommExchange.class);
     
@@ -38,8 +44,30 @@ class CommExchange extends Communicator {
 
     private CommExchange(){
         super({ commInfo ->
+            def commex = commInfo[0]
             def comm = commInfo[1]
+
             def components = comm.id.tokenize(".")
+
+            if(components[0] == COMMEX){
+                switch(comm.id){
+                    case SUBSCRIBE:
+                        commex.subscribe(comm.get(COMM_NAME), 
+                            comm.get(COMMUNICATOR))
+                        break
+                    case UNSUBSCRIBE:
+                        commex.unsubscribe(comm.get(COMM_NAME), 
+                            comm.get(COMMUNICATOR))
+                        break
+                    default:
+                        LOG.error "Unknown comm ${comm.id} for ${commex}"
+                }
+
+                LOG.debug "Commex ${commex} handled comm ${comm}"
+                return
+            }
+
+            
         
             boolean received = false
             def name = ""
@@ -47,7 +75,7 @@ class CommExchange extends Communicator {
             for(String bit in components){
                 name+=bit
                 try{
-                    def communicators = CommExchange.instance.register[name]
+                    def communicators = commex.register[name]
                     if(communicators && communicators.size() > 0){
                         for(def communicator in communicators){
                             Comm toPublish = comm.copyAndConsume(name)
@@ -66,19 +94,18 @@ class CommExchange extends Communicator {
             }
         })
         Actors.defaultActorPGroup.resize handlerCount
+        LOG.debug "New commex created: $this"
     }
-        
-    static void subscribe(String name, Communicator communicator){
+    
+    void subscribe(String name, Communicator communicator){
         if(instance.register[name]){
             instance.register[name] << communicator
         }else{
             instance.register[name] = [ communicator ]
         }
-
-        LOG.error "Subscribed $communicator to $name on $instance"
     }
     
-    static void unsubscribe(String name, Communicator communicator){
+    void unsubscribe(String name, Communicator communicator){
         if(instance.register[name]){
             def registered = instance.register[name]
             for(def i=0; i<registered.size(); i++){

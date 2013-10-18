@@ -46,14 +46,15 @@ public class ServiceManager {
                 [accept:{d, f-> f ==~ /.*?\.groovy*/ }] as FilenameFilter)
                     .each { f ->
                         Bot.LOG.debug("Got service $f")
-                        scripts << f
+                        scripts << "${scriptsDir}/$f"
                     }
         }
-        
+
+        def classLoader = new GroovyClassLoader()
         scripts.sort().each { script ->
             try{
                 // Create the class for the script
-                def serviceClass = this.scriptEngine.loadScriptByName(script);
+                def serviceClass = classLoader.parseClass(new File(script));
 
                 // Create an instance
                 def service = serviceClass.newInstance()
