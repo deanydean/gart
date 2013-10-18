@@ -23,8 +23,12 @@ import java.util.concurrent.*
  */
 class TimeTool {
 
-    def scheduledPool = Executors.newScheduledThreadPool(1);
-    
+    def scheduledPool
+
+    public TimeTool(){
+       initThreadPool() 
+    }
+
     public interval(callback, interval){
         this.scheduledPool.scheduleWithFixedDelay(callback, 0, interval,
             TimeUnit.SECONDS)
@@ -36,6 +40,11 @@ class TimeTool {
     
     public cancelAll(){
         this.scheduledPool.shutdownNow()
+        initThreadPool()
+    }
+
+    private initThreadPool(){
+        this.scheduledPool = Executors.newScheduledThreadPool(1);
     }
     
 }

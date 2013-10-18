@@ -40,10 +40,22 @@ class Swarm {
     def ident
     def config
     def hzInstance
-    
-    public Swarm(swarmConfig){
+   
+    public Swarm(String name){
+        this.ident = name
+        this.hzInstance = Hazelcast.getHazelcastInstanceByName(name)
+
+        if(!this.hzInstance){
+            this.config = new Config()
+            this.config.setInstanceName(name)
+            this.hzInstance = Hazelcast.newHazelcastInstance(this.config)
+        }
+    }
+
+    public Swarm(Object swarmConfig){
         this.ident = swarmConfig.id
         this.config = new Config()
+        this.config.setInstanceName(this.ident)
 
         def network = this.config.getNetworkConfig()
 

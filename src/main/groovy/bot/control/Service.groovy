@@ -31,7 +31,7 @@ public abstract class Service extends Communicator {
     def name
     def enabled
     def level
-    def onComm
+    def handleComm
 
     static Closure onServiceEvent = { data ->
         def service = data[0]
@@ -40,19 +40,24 @@ public abstract class Service extends Communicator {
             case START: service.onStart(); break;
             case STOP: service.onStop(); break;
             default: 
-                if(service.onComm)
-                    service.onComm(comm)
-                else
+                if(service.handleComm){
+                    try{
+                        service.handleComm(comm, service)
+                    }catch(e){
+                        service.LOG.error "Failed onComm for $service: $e"
+                    }
+                }else{
                     service.LOG.info "Unknown $service op for $comm"
+                }
         }
     }
 
-    public Service(name, enabled=false, level=9, onComm=null){
+    public Service(name, enabled=false, level=9, handleComm=null){
         super(onServiceEvent)
         this.name = name
         this.enabled = enabled
         this.level = level
-        this.onComm = onComm
+        this.handleComm = handleComm
     }
 
     void init(){

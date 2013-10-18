@@ -24,20 +24,13 @@ public class ServiceManager {
     private services = [:]
     private serviceIndex = [:]
     private autoStart = false
-    private scriptEngine
 
     public ServiceManager(){
-        def roots = []
-
         if(config.defaultLevel) this.level = config.defaultLevel
         
         // Load services from service dirs
         def scriptsDirs = config.scriptsDirs
-        for(scriptsDir in scriptsDirs)
-            roots << new File(Bot.BOT_HOME+"/"+scriptsDir).toURL()
-       
-        Bot.LOG.debug("Loading service scripts from ${roots}")
-        this.scriptEngine = new GroovyScriptEngine(roots as URL[])
+        Bot.LOG.debug("Loading service scripts from ${scriptsDirs}")
 
         // Detect all services
         def scripts = []
