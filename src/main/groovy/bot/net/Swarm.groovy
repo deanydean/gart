@@ -96,4 +96,12 @@ class Swarm {
     public Map<String,Object> botHeap(ident){
         return this.hzInstance.getMap("${SCOPE_BOT}.${ident}.${RES_HEAP}")
     }
+
+    public Map<String,Object> namedMap(name){
+        return this.hzInstance.getMap(name)
+    }
+
+    public List<Object> namedList(name){
+        return this.hzInstance.getList(name)
+    }
 }
