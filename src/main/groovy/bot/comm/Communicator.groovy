@@ -26,7 +26,7 @@ import bot.log.Log
  */
 class Communicator extends DefaultActor {
     
-    def Log LOG = new Log(Communicator.class)
+    def Log LOG = new Log(this.class.getName())
     
     def onCommAction
     
