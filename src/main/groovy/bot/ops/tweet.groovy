@@ -1,6 +1,8 @@
 package bot.ops
 
 import bot.Bot
+
+@Grab(group='org.twitter4j', module='twitter4j-core', version='3.+')
 import twitter4j.*
 
 /**

@@ -19,6 +19,7 @@ import bot.Bot
 import bot.comm.Communicator
 import bot.comm.Comm
 
+@Grab(group='javax.jmdns', module='jmdns', verison='3.+')
 import javax.jmdns.*
 
 /**

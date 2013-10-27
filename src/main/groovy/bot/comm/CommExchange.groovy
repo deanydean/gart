@@ -15,8 +15,9 @@
  */
 package bot.comm
 
-import groovyx.gpars.actor.*
 import java.util.concurrent.*
+
+import groovyx.gpars.actor.Actors
 
 import bot.Bot
 import bot.log.*

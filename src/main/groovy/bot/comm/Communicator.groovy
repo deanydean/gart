@@ -16,6 +16,7 @@
 package bot.comm
 
 import groovyx.gpars.actor.DefaultActor
+
 import bot.Bot
 import bot.log.Log
 
@@ -27,7 +28,7 @@ import bot.log.Log
 class Communicator extends DefaultActor {
     
     def Log LOG = new Log(this.class.getName())
-    
+   
     def onCommAction
     
     public Communicator(onComm){
