@@ -17,7 +17,7 @@ package bot.net
 
 import bot.Bot
 
-@Grab(name='com.hazelcast', module='hazelcast', version='3.+')
+@Grab("com.hazelcast:hazelcast:3.1")
 import com.hazelcast.config.Config
 import com.hazelcast.core.Hazelcast
 

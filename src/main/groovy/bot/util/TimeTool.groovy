@@ -46,7 +46,6 @@ class TimeTool {
 
     private initThreadPool(){
         scheduledPool = Executors.newScheduledThreadPool(threads);
-    }
-    
+    }    
 }
 

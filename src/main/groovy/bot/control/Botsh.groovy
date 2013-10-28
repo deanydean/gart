@@ -17,9 +17,6 @@ package bot.control
 
 import bot.Bot
 
-//@Grab(name='org.codehaus.groovy', module='groovy-groovysh', version='2.1.+')
-//@Grab(name='jline', module='jline', version='1.+')
-//@Grab(name='org.fusesource.jansi', module='jansi', version='1.+')
 import org.codehaus.groovy.tools.shell.*
 import org.codehaus.groovy.tools.shell.util.*
 
