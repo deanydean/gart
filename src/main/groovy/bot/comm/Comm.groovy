@@ -60,7 +60,7 @@ class Comm implements Serializable {
     
     public String toString(){
         def str = new StringBuffer("COMM[ id:${id} ")
-        data.each { k, v -> str << "$k:$v " }
+        data.each { k, v -> str << "$k:${v.toString()} " }
         str << "]"
         return str.toString()
     }
