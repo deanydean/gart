@@ -44,6 +44,13 @@ class TimeTool {
         initThreadPool()
     }
 
+    public cancelAndWait(maxWait=60, unit=TimeUnit.SECONDS){
+        scheduledPool.shutdown()
+        if(!scheduledPool.awaitTermination(maxWait, unit)){
+            sheduledPool.shutdownNow()
+        }
+    }
+
     private initThreadPool(){
         scheduledPool = Executors.newScheduledThreadPool(threads);
     }    

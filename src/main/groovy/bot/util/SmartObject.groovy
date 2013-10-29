@@ -15,7 +15,7 @@
  */
 package bot.util
 
-import bot.comm.Communicator
+import bot.comm.*
 
 import groovy.transform.AutoClone
 
@@ -51,18 +51,35 @@ class SmartObject extends Communicator {
         if(names.size() > 1) args << names
 
         // Call the method
-        def res = this."$callName"(*args)
+        def res
+        try{
+            res = this."$callName"(*args)
+        }catch(e){
+            LOG.error "Failed to call $callName on $name : $e"
+            res = e
+        }
 
         // Call an oncomplete callback if there is one
         if(comm.get(ON_COMPLETE))
             comm.get(ON_COMPLETE)(res, this)
     }
 
-    def onRead(propertiesNames){
+    public final void ado(op, args=[], onComplete=null){
+        def doComm = new Comm("${this.name}.$op").set(ON_ARGS, args)
+        if(onComplete) doComm.set(ON_COMPLETE, onComplete)
+        doComm.publish()
+    }
+
+    public getName(){
+        return "${prefix}.${ident}"
+    }
+
+    def onRead(propertyNames){
         def res = [:]
-        propertiesNames.each { 
-            res << [ "$it": this.properties[it] ]
-        }
+        if(!propertyNames)
+            res << properties
+        else
+            propertyNames.each { res << [ "$it": properties[it] ] }
         return res
     }
 
@@ -74,7 +91,7 @@ class SmartObject extends Communicator {
         def clone = clone()
         clone.prefix = prefix
         clone.ident = newName
-        clone.subscribeTo("${prefix}.${newName}")
+        clone.subscribeTo(clone.name)
         return clone
     }
 }
