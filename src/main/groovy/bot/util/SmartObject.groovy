@@ -46,14 +46,13 @@ class SmartObject extends Communicator {
 
         // Work out what to call and what to pass in as an arg
         def names = comm.id.tokenize(".")
-        def callName = "on${names[0][0].toUpperCase()}${names[0].substring(1)}"
         def args = comm.get(ON_ARGS)
         if(names.size() > 1) args << names
 
         // Call the method
         def res
         try{
-            res = this."$callName"(*args)
+            res = this."${names[0]}"(*args)
         }catch(e){
             LOG.error "Failed to call $callName on $name : $e"
             res = e
@@ -74,7 +73,7 @@ class SmartObject extends Communicator {
         return "${prefix}.${ident}"
     }
 
-    def onRead(propertyNames){
+    def read(propertyNames){
         def res = [:]
         if(!propertyNames)
             res << properties
@@ -83,11 +82,11 @@ class SmartObject extends Communicator {
         return res
     }
 
-    def onUpdate(newProperties){
+    def update(newProperties){
         this.properties << newProperties 
     }
         
-    def onClone(newName){
+    def copy(newName){
         def clone = clone()
         clone.prefix = prefix
         clone.ident = newName
