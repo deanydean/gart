@@ -38,6 +38,11 @@ class TimeTool {
     public delay(callback, delay, unit=TimeUnit.SECONDS){
         scheduledPool.schedule(callback, delay, unit)
     }
+
+    public schedule(callback, timestamp){
+        scheduledPool.schedule(callback, timestamp-System.currentTimeMillis(), 
+            TimeUnit.MILLISECONDS)
+    }
     
     public cancelAll(){
         scheduledPool.shutdownNow()
