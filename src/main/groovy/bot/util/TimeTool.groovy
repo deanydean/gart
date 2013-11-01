@@ -45,7 +45,8 @@ class TimeTool {
     }
 
     public schedule(callback, timestamp){
-        scheduledPool.schedule(callback, timestamp-System.currentTimeMillis(), 
+        scheduledPool.schedule(callback, 
+            [0,timestamp-System.currentTimeMillis()].max(), 
             TimeUnit.MILLISECONDS)
     }
     
@@ -65,7 +66,7 @@ class TimeTool {
         scheduledPool = Executors.newScheduledThreadPool(threads, threadFactory);
     }
 
-    private class TimerThreadFactory extends ThreadFactory {
+    class TimerThreadFactory extends ThreadFactory {
         
         def counter = new AtomicInteger(0)
         def name
