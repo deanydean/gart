@@ -26,6 +26,8 @@ import org.codehaus.groovy.tools.shell.util.*
  */
 public class Botsh extends Groovysh {
 
+    public static boolean PRINT_ERROR_STACKTRACES = false
+
     def lastResult = null
 
     private static Closure createDefaultRegistrar(){
@@ -74,6 +76,8 @@ public class Botsh extends Groovysh {
 
     public void displayError(e){
         Bot.LOG.error "$e"
+        if(PRINT_ERROR_STACKTRACES)
+            e.printStackTrace()
     }
 
     public void displayBuffer(ArrayList buffer){

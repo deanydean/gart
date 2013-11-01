@@ -16,18 +16,23 @@
 package bot.util
 
 import java.util.concurrent.*
+import java.util.concurrent.atomic.*
 
 /**
- * A tool that can be use to do things at certain times
+ * A tool that can be used to do things at certain times
  * @author deanydean
  */
 class TimeTool {
 
+    def name
     def threads
     def scheduledPool
+    def threadFactory
 
-    public TimeTool(poolSize=1){
+    public TimeTool(poolName="tt-${System.currentTimeMillis()}", poolSize=1){
         threads = poolSize
+        name = poolName
+        threadFactory = new TimerThreadFactory(poolName)
         initThreadPool()
     }
 
@@ -57,7 +62,26 @@ class TimeTool {
     }
 
     private initThreadPool(){
-        scheduledPool = Executors.newScheduledThreadPool(threads);
-    }    
+        scheduledPool = Executors.newScheduledThreadPool(threads, threadFactory);
+    }
+
+    private class TimerThreadFactory extends ThreadFactory {
+        
+        def counter = new AtomicInteger(0)
+        def name
+
+        TimerThreadFactory(name){
+            this.name = name
+        }
+
+        @Override
+        public Thread newThread(Runnable runnable){
+            def thread = new Thread(runnable,
+                "${name}-${counter.getAndIncrement()}")
+            thread.setDaemon(true)
+            return thread
+        }
+
+    }
 }
 
