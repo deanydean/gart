@@ -71,9 +71,13 @@ class Bot {
         }).subscribeTo("bot");
 
         // Set system properties
+        if(CONFIG.net.proxy.host){
+            System.properties << [ 
+                "http.proxyHost": CONFIG.net.proxy.host,
+                "http.proxyPort": CONFIG.net.proxy.port as String,
+            ]
+        }
         System.properties << [ 
-            "http.proxyHost": CONFIG.net.proxy.host,
-            "http.proxyPort": CONFIG.net.proxy.port as String,
             "groovy.grape.report.downloads": "true"
         ]
     }
