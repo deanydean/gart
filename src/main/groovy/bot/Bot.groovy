@@ -135,7 +135,7 @@ class Bot {
             "BOT": this
         ])
 
-        LOG.info "Hello, Bot at your service. How can I help?"
+        LOG.info "What?"
         this.botsh.run()
     }
 }
