@@ -41,7 +41,7 @@ class CommExchange extends Communicator {
     private ConcurrentHashMap<String,List<Communicator>> register = 
         new ConcurrentHashMap<String,List<Communicator>>();
         
-    def handlerCount = Bot.CONFIG.core.commThreads
+    def handlerCount = Bot.CONFIG.core.threads
 
     private CommExchange(){
         super({ commInfo ->
