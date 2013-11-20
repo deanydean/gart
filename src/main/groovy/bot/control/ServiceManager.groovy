@@ -106,30 +106,22 @@ public class ServiceManager {
         }
     }
 
-    public void start(name, serviceLevel=null){
-        def l = (serviceLevel) ? serviceLevel : level
-        if(services[l] && services[l].containsKey(name)){
-            try{
-                Bot.LOG.info "    * Starting ${name} service...."
-                services[l][name].startService()
-            }catch(e){
-                Bot.LOG.error("Could not start service {0} : {1}", name, e)
-            }
-        }else
-            Bot.LOG.error "Unknown level ${l} service: ${name}" 
+    public void start(name){
+        try{
+            Bot.LOG.info "    * Starting ${name} service...."
+            serviceIndex[name].startService()
+        }catch(e){
+            Bot.LOG.error("Could not start service {0} : {1}", name, e)
+        }
     }
 
-    public void stop(name, serviceLevel=null){
-        def l = (serviceLevel) ? serviceLevel : level
-        if(services[l] && services[l].containsKey(name)){
-            try{
-                Bot.LOG.info "    * Stopping ${name} service...."
-                services[l][name].stopService()
-            }catch(e){
-                Bot.LOG.error "Could not stop service ${name} : ${e}"
-            }
-        }else
-            Bot.LOG.error "Unknown level ${l} service: ${name}"
+    public void stop(name){
+        try{
+            Bot.LOG.info "    * Stopping ${name} service...."
+            serviceIndex[name].stopService()
+        }catch(e){
+            Bot.LOG.error "Could not stop service ${name} : ${e}"
+        }
     }
 
     public void startServices(){

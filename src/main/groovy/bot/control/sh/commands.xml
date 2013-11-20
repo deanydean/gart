@@ -18,5 +18,4 @@
 -->
 <commands>
   <command>bot.control.sh.OpCommand</command>
-  <command>bot.control.sh.StartCommand</command>
 </commands>
