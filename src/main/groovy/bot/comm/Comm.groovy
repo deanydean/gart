@@ -17,9 +17,12 @@ package bot.comm
 
 /**
  * A communication
+ * If you change the comm API you should rev the version uid also.
  * @author deanydean
  */
 class Comm implements Serializable {
+
+    private static final long serialVersionUID = 1l
 
     public id;
     public data = [:];

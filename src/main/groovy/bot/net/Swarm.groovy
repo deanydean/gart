@@ -16,16 +16,17 @@
 package bot.net
 
 import bot.Bot
+import bot.comm.*
 
-@Grab("com.hazelcast:hazelcast:3.1")
+@Grab("com.hazelcast:hazelcast:3.1.1")
 import com.hazelcast.config.Config
-import com.hazelcast.core.Hazelcast
+import com.hazelcast.core.*
 
 /**
  * An interface onto the bot swarm
  * @author deanydean
  */
-class Swarm {
+class Swarm extends Communicator implements MessageListener<Comm> {
 
     // This Bot's default swarm
     public static final BOT = (Bot.CONFIG.swarm) ? 
@@ -41,8 +42,15 @@ class Swarm {
     def ident
     def config
     def hzInstance
+
+    private static ON_COMM = { 
+        try{ it[0].publishComm(it[1]) }
+        catch(e){ Bot.LOG.info "ARG! $e" }
+    }
    
     public Swarm(String name){
+        super(ON_COMM)
+
         this.ident = name
         this.hzInstance = Hazelcast.getHazelcastInstanceByName(name)
 
@@ -50,10 +58,13 @@ class Swarm {
             this.config = new Config()
             this.config.setInstanceName(name)
             this.hzInstance = Hazelcast.newHazelcastInstance(this.config)
+            this.init()
         }
     }
 
     public Swarm(Object swarmConfig){
+        super(ON_COMM)
+
         this.ident = swarmConfig.id
         this.config = new Config()
         this.config.setInstanceName(this.ident)
@@ -84,6 +95,19 @@ class Swarm {
         network.getInterfaces().setEnabled(true)
             
         this.hzInstance = Hazelcast.newHazelcastInstance(this.config)
+        this.init()
+    }
+
+    private init(){
+        if(this.hzInstance){
+            // Plumb swarm events into bot comms
+            this.hzInstance.getTopic(SCOPE_SWARM).addMessageListener(this)
+            this.hzInstance.getTopic("${SCOPE_SWARM}.${this.ident}")
+                .addMessageListener(this)
+
+            // Register for swarm comms
+            this.subscribeTo(SCOPE_SWARM)
+        }
     }
     
     public Map<String,Object> theHeap(){
@@ -104,5 +128,17 @@ class Swarm {
 
     public List<Object> namedList(name){
         return this.hzInstance.getList(name)
+    }
+
+    public publishComm(comm){
+        def topic = this.hzInstance.getTopic("swarm")
+        topic.publish(comm)
+    }
+
+    void onMessage(Message<Comm> message){
+        // Send the comm
+        message.messageObject.set("from", message.publishingMember.uuid)
+            .set("time", message.publishTime)
+            .publish()
     }
 }
