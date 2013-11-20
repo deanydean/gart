@@ -17,6 +17,7 @@ package bot
 
 import bot.comm.*
 import bot.control.*
+import bot.control.sh.Botsh
 import bot.log.*
 
 /**

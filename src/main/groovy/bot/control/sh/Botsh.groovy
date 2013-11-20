@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package bot.control
+package bot.control.sh
 
 import bot.Bot
 
@@ -32,12 +32,10 @@ public class Botsh extends Groovysh {
 
     private static Closure createDefaultRegistrar(){
         return { shell ->
-            // Load the default commands for groovysh
+            // Load the default commands and the botsh commands
             def r = new XmlCommandRegistrar(shell, classLoader)
             r.register(Groovysh.class.getResource("commands.xml"))
-
-            // Add some of our own commands
-            shell.register(new BotshOpCommand(shell))
+            r.register(Botsh.class.getResource("commands.xml"))
         }
     }
 
