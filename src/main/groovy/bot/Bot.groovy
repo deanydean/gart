@@ -29,8 +29,7 @@ class Bot {
     // Setup the static members
     def static final ENV = System.getenv()
     def static final BOT_HOME = ENV['BOT_HOME']
-    def static final CONFIG = new ConfigSlurper().parse(
-        new File("$BOT_HOME/etc/bot.conf").toURL())
+    def static final CONFIG = getConfigFile()
     def static final LOG = new Log(Bot.class)
     def static IS_DAEMON = false
 
@@ -138,5 +137,21 @@ class Bot {
 
         LOG.info "What?"
         this.botsh.run()
+    }
+
+    private static getConfigFile(){
+        def cfgFile = new File("$BOT_HOME/etc/bot.conf")
+
+        if(!cfgFile.exists()){
+            // Copy template into conf file location
+            def tmpl = new File("${cfgFile.getPath()}.template")
+            tmpl.withInputStream { ins ->
+                cfgFile.withOutputStream { ous ->
+                    ous << ins
+                }
+            }
+        }
+        return new ConfigSlurper().parse(cfgFile).toURL())
+
     }
 }
