@@ -144,14 +144,13 @@ class Bot {
 
         if(!cfgFile.exists()){
             // Copy template into conf file location
-            def tmpl = new File("${cfgFile.getPath()}.template")
+            def tmpl = new File("$BOT_HOME/etc/bot.conf.template")
             tmpl.withInputStream { ins ->
                 cfgFile.withOutputStream { ous ->
                     ous << ins
                 }
             }
         }
-        return new ConfigSlurper().parse(cfgFile).toURL())
-
+        return new ConfigSlurper().parse(cfgFile.toURL())
     }
 }
