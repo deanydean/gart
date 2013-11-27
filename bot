@@ -18,8 +18,13 @@ export BOT_HOME CLASSPATH PATH
 
 # Make sure we're groovy enough
 which groovy > /dev/null || {
-    [ -d ${BOT_HOME}/bot-ext/scripts ] && { 
-        . ${BOT_HOME}/bot-ext/scripts/get-in-the-groove.sh
+    # Check if we know where it lives
+    [ -n "$GROOVY_HOME" ] && PATH="$PATH:${GROOVY_HOME}/bin" 
+    which groovy > /dev/null || {
+        # Last try, use gitg script if it's there
+        [ -d ${BOT_HOME}/bot-ext/scripts ] && { 
+            . ${BOT_HOME}/bot-ext/scripts/get-in-the-groove.sh
+        }
     }
 }
 
