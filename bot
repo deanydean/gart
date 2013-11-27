@@ -27,7 +27,7 @@ which groovy > /dev/null || {
 startbot=1
 while [ $startbot -eq 1 ]; do
     # Start the bot
-    groovy $BOT_HOME/bot.groovy $@
+    groovy $BOT_HOME/src/main/groovy/bot.groovy $@
     
     # By default, we've had enough.
     startbot=0
