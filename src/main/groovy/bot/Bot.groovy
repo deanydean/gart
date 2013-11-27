@@ -30,7 +30,7 @@ class Bot {
     def static final ENV = System.getenv()
     def static final BOT_HOME = ENV['BOT_HOME']
     def static final CONFIG = new ConfigSlurper().parse(
-        new File("$BOT_HOME/bot.conf").toURL())
+        new File("$BOT_HOME/etc/bot.conf").toURL())
     def static final LOG = new Log(Bot.class)
     def static IS_DAEMON = false
 
