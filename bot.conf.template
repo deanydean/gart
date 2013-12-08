@@ -8,6 +8,11 @@ log {
     level="INFO"
 }
 
+www {
+    docPath="www"
+    port=8080
+}
+
 ops {
     scriptsDirs=["src/main/groovy/bot/ops/", "bot-ext/ops/"]
 }

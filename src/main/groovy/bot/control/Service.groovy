@@ -53,6 +53,7 @@ public abstract class Service extends Communicator {
         this.enabled = enabled
         this.level = level
         this.handleComm = handleComm
+        init()
     }
 
     void init(){
