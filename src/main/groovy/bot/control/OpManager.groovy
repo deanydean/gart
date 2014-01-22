@@ -143,6 +143,8 @@ class OpManager {
         def binding = new Binding()
         binding.setVariable("args", args)
         binding.setVariable("BOT", this.bot)
+        binding.setVariable("LOG", this.bot.LOG)
+        binding.setVariable("CONFIG", this.bot.CONFIG)
         this.scriptEngine.run(name, binding)
         
         if(binding.hasVariable("result"))
