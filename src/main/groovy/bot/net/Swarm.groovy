@@ -18,8 +18,8 @@ package bot.net
 import bot.Bot
 import bot.comm.*
 
-@Grab("com.hazelcast:hazelcast:3.1.1")
-import com.hazelcast.config.Config
+@Grab("com.hazelcast:hazelcast:3.1.5")
+import com.hazelcast.config.*
 import com.hazelcast.core.*
 
 /**
@@ -70,6 +70,18 @@ class Swarm extends Communicator implements MessageListener<Comm> {
         this.config.setInstanceName(this.ident)
 
         def network = this.config.getNetworkConfig()
+
+        // Enable ssl if required
+        if(swarmConfig.ssl && swarmConfig.ssl.enabled){
+            def sslConfig = new SSLConfig()
+            sslConfig.setEnabled(true)
+            sslConfig.setFactoryClassName(
+                swarmConfig.ssl.factoryClass)
+            swarmConfig.ssl.properties.each { k, v ->
+                sslConfig.setProperty(k, v)
+            }
+            network.setSSLConfig(sslConfig)
+        }
 
         // Set the swarm ports
         network.setPort(swarmConfig.port)        
