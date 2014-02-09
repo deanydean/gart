@@ -33,6 +33,7 @@ class CommExchange extends Communicator {
     public static final UNSUBSCRIBE = "commex.unsubscribe"
     public static final COMMUNICATOR = "communicator"
     public static final COMM_NAME = "comm.name"
+    public static final COMM_SOURCE = "comm.source"
     
     private static Log LOG = new Log(CommExchange.class);
     

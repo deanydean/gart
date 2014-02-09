@@ -53,7 +53,16 @@ class Communicator extends DefaultActor {
     }
     
     protected final void onComm(Comm comm){
+        // Perform the action
         this.onCommAction([ this, comm ])
+        
+        // Send a reply
+        if(comm.reply instanceof Closure)
+            comm.reply()
+        else if(comm.reply instanceof String)
+            new Comm(comm.reply)
+                .set(CommExchange.COMM_SOURCE, comm)
+                .publish()
     }
     
     void act(){
