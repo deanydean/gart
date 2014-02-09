@@ -58,7 +58,7 @@ class Communicator extends DefaultActor {
         
         // Send a reply
         if(comm.reply instanceof Closure)
-            comm.reply()
+            comm.reply(comm)
         else if(comm.reply instanceof String)
             new Comm(comm.reply)
                 .set(CommExchange.COMM_SOURCE, comm)
