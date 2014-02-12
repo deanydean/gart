@@ -132,7 +132,8 @@ class Bot {
     private void shell(){
         // Start the bot shell
         this.botsh = new Botsh([
-            "BOT": this
+            "BOT": this,
+            "LOG": this.LOG
         ])
 
         LOG.info "What?"
