@@ -31,6 +31,9 @@ class Bot {
     def static final BOT_HOME = ENV['BOT_HOME']
     def static final CONFIG = getConfigFile()
     def static final LOG = new Log(Bot.class)
+
+    // Static state that will change
+    def static STORE = [:]
     def static IS_DAEMON = false
 
     def options
@@ -75,6 +78,7 @@ class Bot {
             System.properties << [ 
                 "http.proxyHost": CONFIG.net.proxy.host,
                 "http.proxyPort": CONFIG.net.proxy.port as String,
+                "http.nonProxyHosts": CONFIG.net.proxy.nonProxyHosts
             ]
         }
         System.properties << [ 

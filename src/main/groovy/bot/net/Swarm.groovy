@@ -17,7 +17,7 @@ package bot.net
 
 import bot.Bot
 import bot.comm.*
-
+    
 @Grab("com.hazelcast:hazelcast:3.1.5")
 import com.hazelcast.config.*
 import com.hazelcast.core.*
@@ -29,8 +29,8 @@ import com.hazelcast.core.*
 class Swarm extends Communicator implements MessageListener<Comm> {
 
     // This Bot's default swarm
-//    public static final BOT = (Bot.CONFIG.swarm) ? 
-  //      new Swarm(Bot.CONFIG.swarm) : null
+    public static final BOT = (Bot.CONFIG.swarm) ? 
+        new Swarm(Bot.CONFIG.swarm) : null
 
     // Scopes
     public static final SCOPE_SWARM = "swarm"
@@ -47,7 +47,7 @@ class Swarm extends Communicator implements MessageListener<Comm> {
         try{ it[0].publishComm(it[1]) }
         catch(e){ Bot.LOG.info "Swarm.. comm.. ARGH! $e" }
     }
-   
+ 
     public Swarm(String name){
         super(ON_COMM)
 

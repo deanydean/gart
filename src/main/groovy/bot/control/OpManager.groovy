@@ -27,7 +27,7 @@ import bot.log.Log
  * @author deanydean
  */
 class OpManager {
-    def static final Log LOG = new Log(OpManager.class)
+    private static final Log LOG = new Log(OpManager.class)
     
     private config = Bot.CONFIG.ops
     private opComm
