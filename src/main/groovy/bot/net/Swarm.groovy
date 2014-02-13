@@ -45,7 +45,7 @@ class Swarm extends Communicator implements MessageListener<Comm> {
 
     private static ON_COMM = { 
         try{ it[0].publishComm(it[1]) }
-        catch(e){ Bot.LOG.info "Swarm.. comm.. ARGH! $e" }
+        catch(e){ Bot.LOG.error "Swarm.. comm.. ARGH! $e" }
     }
  
     public Swarm(String name){
