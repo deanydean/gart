@@ -10,7 +10,7 @@
 }
 
 # Setup the environment
-CLASSPATH="$BOT_HOME/src/main/groovy:$BOT_HOME/src/main/resources:$BOT_CLASSPATH:$BOT_HOME/bot-ext/src/main/groovy:$BOT_HOME/lib"
+CLASSPATH="$BOT_HOME/src/main/groovy:$BOT_HOME/src/main/resources:$BOT_CLASSPATH:$BOT_HOME/bot-ext/src/main/groovy:$BOT_HOME/lib/*"
 [ -d $BOT_HOME/bot-ext/scripts ] && {
     PATH="$BOT_HOME/bot-ext/scripts:$PATH"
 }
@@ -20,14 +20,7 @@ export BOT_HOME CLASSPATH PATH
 which groovy > /dev/null || {
     # Check if we know where it lives
     [ -n "$GROOVY_HOME" ] && PATH="$PATH:${GROOVY_HOME}/bin" 
-    which groovy > /dev/null || {
-        # Last try, use gitg script if it's there
-        [ -d ${BOT_HOME}/bot-ext/scripts ] && { 
-            . ${BOT_HOME}/bot-ext/scripts/get-in-the-groove.sh
-        }
-    }
 }
-
 
 startbot=1
 while [ $startbot -eq 1 ]; do
