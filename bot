@@ -1,8 +1,8 @@
 #!/bin/bash
 # Run the bot
 
-# Sort BOT_HOME first
-[ -z $BOT_HOME ] && BOT_HOME="."
+# Work out BOT_HOME first (if needed)
+[ -z $BOT_HOME ] && BOT_HOME=$(dirname $0) 
 
 # Check for a bot environment
 [ -e $BOT_HOME/.botenv ] && { 
