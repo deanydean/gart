@@ -27,7 +27,7 @@ import bot.log.Log
  * @author deanydean
  */
 class OpManager {
-    def static final Log LOG = new Log(OpManager.class)
+    private static final Log LOG = new Log(OpManager.class)
     
     private config = Bot.CONFIG.ops
     private opComm
@@ -143,6 +143,8 @@ class OpManager {
         def binding = new Binding()
         binding.setVariable("args", args)
         binding.setVariable("BOT", this.bot)
+        binding.setVariable("LOG", this.bot.LOG)
+        binding.setVariable("CONFIG", this.bot.CONFIG)
         this.scriptEngine.run(name, binding)
         
         if(binding.hasVariable("result"))

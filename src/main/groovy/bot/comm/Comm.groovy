@@ -17,27 +17,31 @@ package bot.comm
 
 /**
  * A communication
+ * If you change the comm API you should rev the version uid also.
  * @author deanydean
  */
 class Comm implements Serializable {
 
-    public id;
-    public data = [:];
+    private static final long serialVersionUID = 1l
+
+    public id
+    public data = [:]
+    public reply
     
     public Comm(id){
-        this.id = id;
+        this.id = id
     }
     
     public Comm copyAndConsume(id){
-        String consumed = this.id.replace(id, "");
+        String consumed = this.id.replace(id, "")
         if(consumed.startsWith(".")){
-            consumed = consumed.substring(1);
+            consumed = consumed.substring(1)
         }
         
         // Copy
-        def copy = new Comm(consumed);
-        copy.data << this.data;
-        return copy;
+        def copy = new Comm(consumed)
+        copy.data << this.data
+        return copy
     }
     
     public boolean isSet(id){
@@ -53,8 +57,9 @@ class Comm implements Serializable {
         return this
     }
     
-    public publish(){
-        CommExchange.publish(this);
+    public publish(reply=null){
+        this.reply = reply
+        CommExchange.publish(this)
         return this
     }
     

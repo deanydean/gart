@@ -1,12 +1,16 @@
 //
 // Default bot config file
 core {
-    threadCount=10
-    commThreads=5
+    threads=10
 }
 
 log {
     level="INFO"
+}
+
+www {
+    docPath="www"
+    port=8080
 }
 
 ops {

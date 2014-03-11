@@ -23,11 +23,6 @@ import bot.comm.*
  */
 public abstract class Service extends Communicator {
 
-    public static final SERVICE = "service"
-
-    public static final START = "start"
-    public static final STOP = "stop"
-
     def name
     def enabled
     def level
@@ -37,8 +32,8 @@ public abstract class Service extends Communicator {
         def service = data[0]
         def comm = data[1]
         switch(comm.id){
-            case START: service.onStart(); break;
-            case STOP: service.onStop(); break;
+            case "start": service.onStart(); break;
+            case "stop": service.onStop(); break;
             default: 
                 if(service.handleComm){
                     try{
@@ -58,11 +53,12 @@ public abstract class Service extends Communicator {
         this.enabled = enabled
         this.level = level
         this.handleComm = handleComm
+        init()
     }
 
     void init(){
         // Subscribe to comms for me
-        this.subscribeTo("${SERVICE}.${this.name}")
+        this.subscribeTo("srv.${this.name}")
     }
 
     // Service impls must override these methods
@@ -70,11 +66,10 @@ public abstract class Service extends Communicator {
     protected abstract void onStop()
 
     public final void startService(){
-        new Comm("${SERVICE}.${this.name}.${START}").publish() 
+        new Comm("srv.${this.name}.start").publish() 
     }
 
     public final void stopService(){
-        new Comm("${SERVICE}.${this.name}.${STOP}").publish()
+        new Comm("srv.${this.name}.stop").publish()
     }
-
 }

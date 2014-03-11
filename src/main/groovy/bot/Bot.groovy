@@ -17,6 +17,7 @@ package bot
 
 import bot.comm.*
 import bot.control.*
+import bot.control.sh.Botsh
 import bot.log.*
 
 /**
@@ -28,9 +29,11 @@ class Bot {
     // Setup the static members
     def static final ENV = System.getenv()
     def static final BOT_HOME = ENV['BOT_HOME']
-    def static final CONFIG = new ConfigSlurper().parse(
-        new File("$BOT_HOME/bot.conf").toURL())
+    def static final CONFIG = getConfigFile()
     def static final LOG = new Log(Bot.class)
+
+    // Static state that will change
+    def static STORE = [:]
     def static IS_DAEMON = false
 
     def options
@@ -75,6 +78,7 @@ class Bot {
             System.properties << [ 
                 "http.proxyHost": CONFIG.net.proxy.host,
                 "http.proxyPort": CONFIG.net.proxy.port as String,
+                "http.nonProxyHosts": CONFIG.net.proxy.nonProxyHosts
             ]
         }
         System.properties << [ 
@@ -132,10 +136,26 @@ class Bot {
     private void shell(){
         // Start the bot shell
         this.botsh = new Botsh([
-            "BOT": this
+            "BOT": this,
+            "LOG": this.LOG
         ])
 
         LOG.info "What?"
         this.botsh.run()
+    }
+
+    private static getConfigFile(){
+        def cfgFile = new File("$BOT_HOME/etc/bot.conf")
+
+        if(!cfgFile.exists()){
+            // Copy template into conf file location
+            def tmpl = new File("$BOT_HOME/etc/bot.conf.template")
+            tmpl.withInputStream { ins ->
+                cfgFile.withOutputStream { ous ->
+                    ous << ins
+                }
+            }
+        }
+        return new ConfigSlurper().parse(cfgFile.toURL())
     }
 }

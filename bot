@@ -1,8 +1,8 @@
 #!/bin/bash
 # Run the bot
 
-# Sort BOT_HOME first
-[ -z $BOT_HOME ] && BOT_HOME="."
+# Work out BOT_HOME first (if needed)
+[ -z $BOT_HOME ] && BOT_HOME=$(dirname $0) 
 
 # Check for a bot environment
 [ -e $BOT_HOME/.botenv ] && { 
@@ -10,7 +10,7 @@
 }
 
 # Setup the environment
-CLASSPATH="$BOT_HOME/src/main/groovy:$BOT_HOME/src/main/resources:$BOT_CLASSPATH:$BOT_HOME/bot-ext/src/main/groovy"
+CLASSPATH="$BOT_HOME/src/main/groovy:$BOT_HOME/src/main/resources:$BOT_CLASSPATH:$BOT_HOME/bot-ext/src/main/groovy:$BOT_HOME/lib/*"
 [ -d $BOT_HOME/bot-ext/scripts ] && {
     PATH="$BOT_HOME/bot-ext/scripts:$PATH"
 }
@@ -18,16 +18,14 @@ export BOT_HOME CLASSPATH PATH
 
 # Make sure we're groovy enough
 which groovy > /dev/null || {
-    [ -d ${BOT_HOME}/bot-ext/scripts ] && { 
-        . ${BOT_HOME}/bot-ext/scripts/get-in-the-groove.sh
-    }
+    # Check if we know where it lives
+    [ -n "$GROOVY_HOME" ] && PATH="$PATH:${GROOVY_HOME}/bin" 
 }
-
 
 startbot=1
 while [ $startbot -eq 1 ]; do
     # Start the bot
-    groovy $BOT_HOME/bot.groovy $@
+    groovy $JAVA_OPTS $BOT_HOME/src/main/groovy/bot.groovy $@
     
     # By default, we've had enough.
     startbot=0

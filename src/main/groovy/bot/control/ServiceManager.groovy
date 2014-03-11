@@ -35,11 +35,11 @@ public class ServiceManager {
         // Detect all services
         def scripts = []
         for(scriptsDir in config.scriptsDirs){
-            def dir = new File(Bot.BOT_HOME+"/"+scriptsDir).list(
+            def dir = new File("${Bot.BOT_HOME}/$scriptsDir").list(
                 [accept:{d, f-> f ==~ /.*?\.groovy*/ }] as FilenameFilter)
                     .each { f ->
                         Bot.LOG.debug("Got service $f")
-                        scripts << "${scriptsDir}/$f"
+                        scripts << "${Bot.BOT_HOME}/${scriptsDir}/$f"
                     }
         }
 
@@ -106,13 +106,10 @@ public class ServiceManager {
         }
     }
 
-    public Object getService(name){
-        return services[name]
-    }
 
     public void start(name){
         try{
-            Bot.LOG.info " * Starting ${name} service...."
+            Bot.LOG.info "    * Starting ${name} service...."
             serviceIndex[name].startService()
         }catch(e){
             Bot.LOG.error("Could not start service {0} : {1}", name, e)
@@ -121,7 +118,7 @@ public class ServiceManager {
 
     public void stop(name){
         try{
-            Bot.LOG.info " * Stopping ${name} service...."
+            Bot.LOG.info "    * Stopping ${name} service...."
             serviceIndex[name].stopService()
         }catch(e){
             Bot.LOG.error "Could not stop service ${name} : ${e}"
