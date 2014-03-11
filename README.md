@@ -22,8 +22,3 @@ To run a bot:
 
 `$ ./bot`
 
-To get all bot dependencies (gradle required) use:
-
-`$ ./bot get deps`
-
-

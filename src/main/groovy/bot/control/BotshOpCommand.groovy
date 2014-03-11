@@ -3,7 +3,6 @@ package bot.control
 import bot.Bot
 import bot.comm.Comm
 
-import jline.Completor
 import org.codehaus.groovy.tools.shell.*
 
 public class BotshOpCommand extends CommandSupport {

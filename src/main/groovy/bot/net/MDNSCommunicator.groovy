@@ -19,6 +19,7 @@ import bot.Bot
 import bot.comm.Communicator
 import bot.comm.Comm
 
+@Grab("javax.jmdns:jmdns:3.4.1")
 import javax.jmdns.*
 
 /**
@@ -43,10 +44,7 @@ class MDNSCommunicator extends Communicator {
     
     
     def config = Bot.CONFIG.mdns
-    
-    //def jmdns = JmDNS.create(null, "MDNSCommunicator")
     def jmdns = null
-    //def jmdns = JmmDNS.Factory.getInstance();
     
     public MDNSCommunicator(){
         super({

@@ -16,6 +16,8 @@
 package bot.comm
 
 import groovyx.gpars.actor.DefaultActor
+
+import bot.Bot
 import bot.log.Log
 
 /**
@@ -25,8 +27,8 @@ import bot.log.Log
  */
 class Communicator extends DefaultActor {
     
-    def Log LOG = new Log(Communicator.class)
-    
+    def Log LOG = new Log(this.class.getName())
+   
     def onCommAction
     
     public Communicator(onComm){
@@ -37,11 +39,17 @@ class Communicator extends DefaultActor {
     }
     
     public void subscribeTo(String id){
-        CommExchange.subscribe(id, this)
+        new Comm(CommExchange.SUBSCRIBE)
+            .set(CommExchange.COMM_NAME, id)
+            .set(CommExchange.COMMUNICATOR, this)
+            .publish()
     }
     
     public void unsubscribeFrom(String id){
-        CommExchange.unsubscribe(id, this)
+        new Comm(CommExchange.UNSUBSCRIBE)
+            .set(CommExchange.COMM_NAME, id)
+            .set(CommExchange.COMMUNICATOR, this)
+            .publish()
     }
     
     protected final void onComm(Comm comm){

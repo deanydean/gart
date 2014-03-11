@@ -32,7 +32,7 @@ class Bot {
         new File("$BOT_HOME/bot.conf").toURL())
     def static final LOG = new Log(Bot.class)
     def static IS_DAEMON = false
-    
+
     def options
     def opManager
     def daemon
@@ -69,6 +69,17 @@ class Bot {
                 this.restart()
             }
         }).subscribeTo("bot");
+
+        // Set system properties
+        if(CONFIG.net.proxy.host){
+            System.properties << [ 
+                "http.proxyHost": CONFIG.net.proxy.host,
+                "http.proxyPort": CONFIG.net.proxy.port as String,
+            ]
+        }
+        System.properties << [ 
+            "groovy.grape.report.downloads": "true"
+        ]
     }
     
     String toString(){
@@ -124,7 +135,7 @@ class Bot {
             "BOT": this
         ])
 
-        LOG.info "Hello, Bot at your service. How can I help?"
+        LOG.info "What?"
         this.botsh.run()
     }
 }
