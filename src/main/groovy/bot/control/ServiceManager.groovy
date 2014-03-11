@@ -48,18 +48,22 @@ public class ServiceManager {
         scripts.sort().each { script ->
             try{
                 // Create the class for the script
-                def serviceClass = this.scriptEngine.loadScriptByName(script);
+                def serviceClass = this.scriptEngine.loadScriptByName(script)
 
                 // Create an instance
                 def service = serviceClass.newInstance()
                 Bot.LOG.debug "Adding service ${service.name}"
                 services[service.name] = service
             }catch(ScriptException se){
-                Bot.LOG.error("ScriptException for {0} : {1}", f, se);
+                Bot.LOG.error("ScriptException for {0} : {1}", f, se)
             }catch(ResourceException re){
-                Bot.LOG.error("ResourceException for {0} : {1}", f, re);
+                Bot.LOG.error("ResourceException for {0} : {1}", f, re)
             }
         }
+    }
+
+    public Object getService(name){
+        return services[name]
     }
 
     public void start(name){
