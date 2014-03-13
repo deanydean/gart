@@ -6,6 +6,9 @@ import java.security.*
 
 class KeyStore {
 
+    def keyGen = KeyPairGenerator.getInstance("RSA", "SUN")
+    def rng = SecureRandom.getInstance("SHA1PRNG", "SUN")
+
     def keyFile
     def keyStore
     def storePass
@@ -15,9 +18,11 @@ class KeyStore {
         this.storePass = password
         this.keyStore = java.security.KeyStore.getInstance(
             java.security.KeyStore.getDefaultType())
-        
+       
+        this.keyGen.initialize(2048, rng)
+
         // Load the keystore
-        def fileInput = this.keyFile.exists() ? 
+        def fileIynput = this.keyFile.exists() ? 
             new FileInputStream(this.keyFile) : null
 
         try{
@@ -30,6 +35,19 @@ class KeyStore {
     }
 
     /**
+     * Load the main key
+     */
+    public loadKey(){
+        
+    }
+
+    public trustCertificate(){
+    }
+
+    public untrustCertificate(name){
+    }
+
+    /**
      * Save the keystore to the file.
      * This should be run after all operations that change the file
      */
@@ -37,9 +55,9 @@ class KeyStore {
         def fileOutput = new FileOutputStream(this.keyFile)
         try{
             this.keyStore.store(fileOutput, this.storePass)
+            Bot.LOG.info "Saved keystore to file ${this.keyFile}"
         }finally{
             fileOutput.close()
         }
     }
-
 }

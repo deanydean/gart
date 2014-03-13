@@ -29,8 +29,8 @@ import com.hazelcast.core.*
 class Swarm extends Communicator implements MessageListener<Comm> {
 
     // This Bot's default swarm
-    public static final BOT = (Bot.CONFIG.swarm) ? 
-        new Swarm(Bot.CONFIG.swarm) : null
+    //public static final BOT = (Bot.CONFIG.swarm) ? 
+      //  new Swarm(Bot.CONFIG.swarm) : null
 
     // Scopes
     public static final SCOPE_SWARM = "swarm"

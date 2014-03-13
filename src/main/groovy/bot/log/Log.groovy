@@ -31,7 +31,7 @@ class Log {
     public static final Level ERROR = Level.WARNING
     public static final Level INFO = Level.INFO
     public static final Level DEBUG = Level.FINE
-    
+   
     private long lastLogTime = 0l
     private boolean repeatLock = false
     private long repeatInterval = 1000l
