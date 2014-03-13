@@ -96,7 +96,7 @@ class Swarm extends Communicator implements MessageListener<Comm> {
             .setMulticastPort(swarmConfig.mcPort)
         
         // Add tcp comms for all members
-        for(def member in swarmConfig.tcpmembers)
+        for(def member in swarmConfig.tcpMembers)
             join.getTcpIpConfig().addMember(member)
 
         // Configure the interfaces to use
