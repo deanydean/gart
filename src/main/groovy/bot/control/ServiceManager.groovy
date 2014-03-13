@@ -73,9 +73,9 @@ public class ServiceManager {
                     Bot.LOG.error "Cannot load $service as it has no name"
                 }
             }catch(ScriptException se){
-                Bot.LOG.error("ScriptException for {0} : {1}", f, se);
+                Bot.LOG.error("ScriptException for {0} : {1}", f, se)
             }catch(ResourceException re){
-                Bot.LOG.error("ResourceException for {0} : {1}", f, re);
+                Bot.LOG.error("ResourceException for {0} : {1}", f, re)
             }catch(e){
                 Bot.LOG.error("Failed to load script {0} : {1}", script, e);
             }
@@ -105,6 +105,7 @@ public class ServiceManager {
             level = newLevel
         }
     }
+
 
     public void start(name){
         try{
