@@ -10,6 +10,7 @@
 }
 
 # Setup the environment
+PATH="$BOT_HOME:$BOT_HOME/src/main/scripts:$PATH"
 CLASSPATH="$BOT_HOME/src/main/groovy:$BOT_HOME/src/main/resources:$BOT_CLASSPATH:$BOT_HOME/bot-ext/src/main/groovy:$BOT_HOME/lib/*"
 [ -d $BOT_HOME/bot-ext/scripts ] && {
     PATH="$BOT_HOME/bot-ext/scripts:$PATH"
