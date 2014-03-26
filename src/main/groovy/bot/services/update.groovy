@@ -52,7 +52,7 @@ class UpdateService extends Service {
     
     public void onStart(){
         // Start checking for updates
-        def interval = config.interval ? config.interval : 30
+        def interval = config.interval ? config.interval : 60
         timer.interval(checkForUpdates, (interval*60))
     }
     
