@@ -77,7 +77,9 @@ public class ServiceManager {
             }catch(ResourceException re){
                 Bot.LOG.error("ResourceException for {0} : {1}", f, re)
             }catch(e){
-                Bot.LOG.error("Failed to load script {0} : {1}", script, e);
+                Bot.LOG.error("Failed to load script {0} : {1}", script, e)
+            }catch(Error e){
+                Bot.LOG.error("Error loading script {0} : {1}", script, e)
             }
         }
     }
@@ -129,7 +131,7 @@ public class ServiceManager {
         (0..this.level).each { level ->
             Bot.LOG.info "Starting level $level services...."
             services[level].each { name, service ->
-                if(service.enabled) start(name, level)
+                if(service.enabled) start(name)
             }
         }
         Bot.LOG.info "Level 0->$level services started"
@@ -140,7 +142,7 @@ public class ServiceManager {
         (this.level..0).each { level ->
             Bot.LOG.info "Stopping level $level services...."
             services[level].each { name, service ->
-                if(service.enabled) stop(name, level)
+                if(service.enabled) stop(name)
             }
         }
         Bot.LOG.info "Services stopped"
