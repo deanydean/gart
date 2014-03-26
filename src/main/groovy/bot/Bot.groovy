@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Matt Dean
+ * Copyright 2014 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -145,17 +145,21 @@ class Bot {
     }
 
     private static getConfigFile(){
-        def cfgFile = new File("$BOT_HOME/etc/bot.conf")
+        def config = new ConfigObject()
 
-        if(!cfgFile.exists()){
-            // Copy template into conf file location
-            def tmpl = new File("$BOT_HOME/etc/bot.conf.template")
-            tmpl.withInputStream { ins ->
-                cfgFile.withOutputStream { ous ->
-                    ous << ins
-                }
+        // Load all config files from bot.conf.d
+        def configDir = new File("$BOT_HOME/etc/bot.conf.d")
+        configDir.listFiles([accept:{ f -> f ==~ /.*?\.conf/ }] as FileFilter)
+            .toList().each {
+                config.putAll(new ConfigSlurper().parse(it.toURL()))
             }
-        }
-        return new ConfigSlurper().parse(cfgFile.toURL())
+        
+
+        // Load the master config
+        def cfgFile = new File("$BOT_HOME/etc/bot.conf")
+        if(cfgFile.exists())
+            config.putAll(new ConfigSlurper().parse(cfgFile.toURL()))
+
+        return config
     }
 }
