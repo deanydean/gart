@@ -133,6 +133,14 @@ class Bot {
         }
     }
 
+    public void on(id, task){
+        new Communicator({ task(it[1].get("args")) }).subscribeTo(id)
+    }
+
+    public void comm(id, args, complete){
+        new Comm(id).set("args", args).publish(complete)
+    }
+
     private void shell(){
         // Start the bot shell
         this.botsh = new Botsh([
