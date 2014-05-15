@@ -23,11 +23,11 @@ import bot.comm.Communicator
 import bot.log.Log
 
 /**
- * Runs operations for the bot
+ * Loads and runs operations for the bot
  * @author deanydean
  */
-class OpManager {
-    private static final Log LOG = new Log(OpManager.class)
+class OpLoader extends Service {
+    private static final Log LOG = new Log(OpLoader.class)
     
     private config = Bot.CONFIG.ops
     private opComm
@@ -35,7 +35,9 @@ class OpManager {
     private bot
     private running = false
     
-    public OpManager(){
+    public OpLoader(){
+        super("ops", true)
+        
         // Create the roots....
         def roots = []
        
@@ -53,8 +55,8 @@ class OpManager {
         return this
     }
     
-    public start(){
-        if(this.running) return this
+    public void onStart(){
+        if(this.running) return
 
         if(!this.opComm){
             // Create the op subscriber
@@ -83,10 +85,9 @@ class OpManager {
 
         this.opComm.subscribeTo("op")
         this.running = true
-        return this
     }
     
-    public stop(){
+    public void onStop(){
         if(!this.running) return
         this.opComm.unsubscribeFrom("op")
         this.running = false

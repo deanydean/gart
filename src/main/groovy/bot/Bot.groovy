@@ -34,33 +34,32 @@ class Bot {
 
     // Static state that will change
     def static STORE = [:]
-    def static IS_DAEMON = false
 
     def options
-    def opManager
-    def daemon
-    def op
     def args
     def botsh
-    
+
+    def shell = {
+        // Start the bot shell
+        def botsh = new Botsh([
+            "BOT": this,
+            "LOG": this.LOG
+        ])
+
+        LOG.info "What?"
+        botsh.run()
+    }
+   
     Bot(options){
         this.options = options
         this.args = new ArrayList(this.options.arguments())
           
-        this.opManager = new OpManager()
-        this.opManager.adopt(this).start()
-        
         // Parse Ds
         def params = this.options.Ds
         if(params){
             for(def i=0; i<params.size(); i+=2){
                 CONFIG[params[i]] = params[i+1]
             }
-        }
-
-        // Check if we're running in daemon mode.....
-        if(this.options.daemon){
-            this.daemon = new Daemon()
         }
 
         // Subscribe to bot comms
@@ -70,8 +69,14 @@ class Bot {
 
             if(comm.id == "restart"){
                 this.restart()
+            }else(comm.id == "stop"){
+                this.stop()
             }
         }).subscribeTo("bot");
+
+        // Init service loader and op loader
+        new ServiceLoader()
+        new OpLoader()
 
         // Set system properties
         if(CONFIG.net.proxy.host){
@@ -89,59 +94,29 @@ class Bot {
     String toString(){
         return "BOT: ${this.options.toString()}"
     }
-    
-    void run(){
-        if(this.args.isEmpty())
-            this.daemon ? start() : shell()
-        else
-            op()
-    }
-    
-    void start(){
-        IS_DAEMON = true
-        LOG.info "Bot daemon started"
-        this.daemon.start().join()
-        LOG.debug "Daemon has ended"
-    }
 
+    void run(){
+        if(this.options.daemon){
+            new Comm("srv.loader.start").publish(shell)
+        }else if(!this.args.isEmpty()){
+            new Comm("op").set("args", this.args).publish(shell)
+        }else{
+            shell()
+        }
+    }
+    
     void restart(){
         // Create restart file.....
         new File("${BOT_HOME}/.restart").createNewFile()
-        
-        if(IS_DAEMON){
-            this.daemon.stop()
-        }else{
+        stop()
+    }
+
+    void stop(){       
+        // Stop all running services
+        new Comm("srv.loader.stop").publish({
+            LOG.info "Goodbye!"
             System.exit(0)
-        }
-    }
-    
-    void op(){
-        try{
-            // Do the op
-            def result = this.opManager.perform(this.args)
-            
-            if(!result){
-                // Do nothing
-            }else if(result.success){
-                LOG.info result.message
-            }else{
-                throw result.message
-            }
-        }catch(e){
-            LOG.error "Oh dear! ${e.getMessage()}"
-            e.printStackTrace()
-        }
-    }
-
-    private void shell(){
-        // Start the bot shell
-        this.botsh = new Botsh([
-            "BOT": this,
-            "LOG": this.LOG
-        ])
-
-        LOG.info "What?"
-        this.botsh.run()
+        })
     }
 
     private static getConfigFile(){
