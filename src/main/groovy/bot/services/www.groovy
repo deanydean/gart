@@ -43,6 +43,9 @@ class WWWService extends Service {
     
     @Override
     public void onStart(){
+        Spark.get("/", { req, resp ->
+            return "<h1>&lt;bot/&gt;</h1>"
+        })
         Spark.get("/hello", { req, resp ->
             return "Hello World!"
         })
