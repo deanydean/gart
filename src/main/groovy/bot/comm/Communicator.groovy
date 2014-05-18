@@ -53,23 +53,25 @@ class Communicator extends DefaultActor {
     }
     
     protected final void onComm(Comm comm){
-        LOG.debug "$this ON: $comm -> ${comm.reply}"
+        LOG.debug "$this ON: $comm"
 
         try{
             // Perform the action
             this.onCommAction([ this, comm ])
     
             // Send a reply
-            if(comm.reply instanceof Closure)
+            if(comm.reply instanceof Closure){
+                LOG.debug "Running reply closure to $comm"
                 comm.reply(comm)
-            else if(comm.reply instanceof String)
+            }else if(comm.reply instanceof String)
                 new Comm(comm.reply)
                     .set(CommExchange.COMM_SOURCE, comm)
                     .publish()
             else if(comm.reply != null)
-                LOG.error "Unknown reply ${comm.reply} to $comm"
+                LOG.error "Unknown reply to ${comm} : ${comm.reply}"
         }catch(t){
-            LOG.error "Failed $comm : ${comm.reply}"
+            LOG.error "Failed $comm : $t"
+            t.printStackTrace()
         }
     }
     
