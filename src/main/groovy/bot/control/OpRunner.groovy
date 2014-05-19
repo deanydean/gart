@@ -17,10 +17,9 @@ package bot.control
 
 import groovy.lang.Binding
 import groovy.util.GroovyScriptEngine
-import groovyx.gpars.dataflow.DataflowQueue
-import static groovyx.gpars.dataflow.Dataflow.task
 
 import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicInteger
 
 import bot.Bot
 import bot.comm.*
@@ -38,8 +37,9 @@ class OpRunner extends Service {
     private scriptEngine
     private bot
     private running = false
+    private tid = new AtomicInteger(0)
     private executor = Executors.newFixedThreadPool(10, { r ->
-        def t = new Thread(r, "oprunner-executor")
+        def t = new Thread(r, "oprunner-executor-${tid.getAndIncrement()}")
         t.setDaemon(true)
         return t
     } as ThreadFactory)
