@@ -57,10 +57,14 @@ class Bot extends Communicator {
         def comm = commData[1]
         LOG.info("I've been told to ${comm.id}")
 
-        if(comm.id == "restart")
-            bot.restart()
-        else(comm.id == "stop")
-            bot.stopNow()
+        try{
+            if(comm.id == "restart")
+                bot.restart()
+            else(comm.id == "stop")
+                bot.stopNow()
+        }catch(Throwable t){
+            LOG.error "Failed to ${comm.id} due to $t"
+        }
     }
 
     Bot(options){

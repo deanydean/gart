@@ -20,7 +20,7 @@ import groovy.util.GroovyScriptEngine
 import groovyx.gpars.dataflow.DataflowQueue
 import static groovyx.gpars.dataflow.Dataflow.task
 
-import java.util.concurrent.Executors
+import java.util.concurrent.*
 
 import bot.Bot
 import bot.comm.*
@@ -38,7 +38,11 @@ class OpRunner extends Service {
     private scriptEngine
     private bot
     private running = false
-    private executor = Executors.newFixedThreadPool(10)
+    private executor = Executors.newFixedThreadPool(10, { r ->
+        def t = new Thread(r, "oprunner-executor")
+        t.setDaemon(true)
+        return t
+    } as ThreadFactory)
 
     public OpRunner(){
         super("ops", true)
