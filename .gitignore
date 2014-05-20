@@ -1,7 +1,11 @@
 bot.conf
 www
+lib
+tmp
 bot-ext
 .restart
 .botenv
 *.swp
+*.log
+*.log.*
 /.nb-gradle/profiles/private/
