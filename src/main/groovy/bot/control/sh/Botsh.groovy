@@ -20,6 +20,9 @@ import bot.Bot
 import org.codehaus.groovy.tools.shell.*
 import org.codehaus.groovy.tools.shell.util.*
 
+// Import jline for history functions
+//@Grab("jline:jline:2.10")
+
 /**
  * A basic groovy shell for the bot
  * @author deanydean

@@ -81,7 +81,7 @@ class CommExchange extends Communicator {
                     if(communicators && communicators.size() > 0){
                         for(def communicator in communicators){
                             Comm toPublish = comm.copyAndConsume(name)
-                            communicator.send(toPublish)
+                            communicator << toPublish
                             received = true
                         }
                     }

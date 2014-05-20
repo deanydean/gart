@@ -53,27 +53,31 @@ class Communicator extends DefaultActor {
     }
     
     protected final void onComm(Comm comm){
-        // Perform the action
-        this.onCommAction([ this, comm ])
-        
-        // Send a reply
-        if(comm.reply instanceof Closure)
-            comm.reply(comm)
-        else if(comm.reply instanceof String)
-            new Comm(comm.reply)
-                .set(CommExchange.COMM_SOURCE, comm)
-                .publish()
+        LOG.debug "$this ON: $comm"
+
+        try{
+            // Perform the action
+            this.onCommAction([ this, comm ])
+    
+            // Send a reply
+            if(comm.reply instanceof Closure){
+                LOG.debug "Running reply closure to $comm"
+                comm.reply(comm)
+            }else if(comm.reply instanceof String)
+                new Comm(comm.reply)
+                    .set(CommExchange.COMM_SOURCE, comm)
+                    .publish()
+            else if(comm.reply != null)
+                LOG.error "Unknown reply to ${comm} : ${comm.reply}"
+        }catch(t){
+            LOG.error "Failed $comm : $t"
+            t.printStackTrace()
+        }
     }
     
     void act(){
         loop {
-            react { Comm comm ->
-                try{
-                    this.onComm(comm)
-                }catch(err){
-                    LOG.info("Failed to handle comm ${comm} : ${err}")
-                }
-            }
+            react { Comm comm -> this.onComm(comm) }
         }
     }
 }

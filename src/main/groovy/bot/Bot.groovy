@@ -24,7 +24,7 @@ import bot.log.*
  * The main bot instance
  * @author deanydean
  */
-class Bot {
+class Bot extends Communicator {
     
     // Setup the static members
     def static final ENV = System.getenv()
@@ -34,44 +34,58 @@ class Bot {
 
     // Static state that will change
     def static STORE = [:]
-    def static IS_DAEMON = false
 
     def options
-    def opManager
-    def daemon
-    def op
     def args
     def botsh
-    
+
+    def shell = {
+        if(!this.botsh){
+            comm("op.greet", {
+                this.botsh = new Botsh([
+                    "BOT": this, 
+                    "LOG": this.LOG
+                ])
+                this.botsh.run()
+                comm("bot.stop")
+            })
+        }
+    }
+  
+    def static handleComm = { commData -> 
+        def bot = commData[0]
+        def comm = commData[1]
+        LOG.info("I've been told to ${comm.id}")
+
+        try{
+            if(comm.id == "restart")
+                bot.restart()
+            else(comm.id == "stop")
+                bot.stopNow()
+        }catch(Throwable t){
+            LOG.error "Failed to ${comm.id} due to $t"
+        }
+    }
+
     Bot(options){
+        super(handleComm)
+
         this.options = options
         this.args = new ArrayList(this.options.arguments())
           
-        this.opManager = new OpManager()
-        this.opManager.adopt(this).start()
-        
         // Parse Ds
         def params = this.options.Ds
         if(params){
-            for(def i=0; i<params.size(); i+=2){
+            for(def i=0; i<params.size(); i+=2)
                 CONFIG[params[i]] = params[i+1]
-            }
         }
+        
+        // Init service loader
+        new ServiceLoader()
 
-        // Check if we're running in daemon mode.....
-        if(this.options.daemon){
-            this.daemon = new Daemon()
-        }
+        // Init the oploader
+        new OpRunner().adopt(this).onStart()
 
-        // Subscribe to bot comms
-        new Communicator({ commData ->
-            def comm = commData[1]
-            LOG.info("Bot received comm ${comm}")
-
-            if(comm.id == "restart"){
-                this.restart()
-            }
-        }).subscribeTo("bot");
 
         // Set system properties
         if(CONFIG.net.proxy.host){
@@ -84,72 +98,51 @@ class Bot {
         System.properties << [ 
             "groovy.grape.report.downloads": "true"
         ]
+
+        // Subscribe to bot comms
+        this.subscribeTo("bot")
     }
     
     String toString(){
-        return "BOT: ${this.options.toString()}"
-    }
-    
-    void run(){
-        if(this.args.isEmpty())
-            this.daemon ? start() : shell()
-        else
-            op()
-    }
-    
-    void start(){
-        IS_DAEMON = true
-        LOG.info "Bot daemon started"
-        this.daemon.start().join()
-        LOG.debug "Daemon has ended"
+        return "BOT"
     }
 
+    void run(){
+        LOG.debug "Running bot daemon?${this.options.daemon} op=${this.args}"
+
+        if(this.options.daemon)
+            comm("srv.loader.start", shell)
+        else if(!this.args.isEmpty())
+            comm("op", { this.terminate() }, this.args)
+        else            
+            shell()
+
+        this.join()
+    }
+    
     void restart(){
         // Create restart file.....
         new File("${BOT_HOME}/.restart").createNewFile()
-        
-        if(IS_DAEMON){
-            this.daemon.stop()
-        }else{
-            System.exit(0)
-        }
+        comm("bot.stop")
     }
-    
-    void op(){
-        try{
-            // Do the op
-            def result = this.opManager.perform(this.args)
-            
-            if(!result){
-                // Do nothing
-            }else if(result.success){
-                LOG.info result.message
-            }else{
-                throw result.message
-            }
-        }catch(e){
-            LOG.error "Oh dear! ${e.getMessage()}"
-            e.printStackTrace()
-        }
+
+    def stopNow(){ 
+        // Stop all running services
+        comm("srv.loader.stop", {
+            // Now stop all other things that need to be stopped
+            comm("stop", {
+                LOG.info "Goodbye!"
+                this.terminate() 
+            })
+        })
     }
 
     public void on(id, task){
         new Communicator({ task(it[1].get("args")) }).subscribeTo(id)
     }
 
-    public void comm(id, args, complete){
+    public void comm(id, complete=null, args=null){
         new Comm(id).set("args", args).publish(complete)
-    }
-
-    private void shell(){
-        // Start the bot shell
-        this.botsh = new Botsh([
-            "BOT": this,
-            "LOG": this.LOG
-        ])
-
-        LOG.info "What?"
-        this.botsh.run()
     }
 
     private static getConfigFile(){

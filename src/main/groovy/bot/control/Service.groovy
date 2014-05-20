@@ -64,12 +64,4 @@ public abstract class Service extends Communicator {
     // Service impls must override these methods
     protected abstract void onStart()
     protected abstract void onStop()
-
-    public final void startService(){
-        new Comm("srv.${this.name}.start").publish() 
-    }
-
-    public final void stopService(){
-        new Comm("srv.${this.name}.stop").publish()
-    }
 }

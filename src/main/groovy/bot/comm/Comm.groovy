@@ -31,6 +31,12 @@ class Comm implements Serializable {
     public Comm(id){
         this.id = id
     }
+
+    public Comm(id, comm){
+        this.id = comm.id
+        this.data << comm.data
+        this.reply = comm.reply
+    }
     
     public Comm copyAndConsume(id){
         String consumed = this.id.replace(id, "")
@@ -41,6 +47,14 @@ class Comm implements Serializable {
         // Copy
         def copy = new Comm(consumed)
         copy.data << this.data
+        if(this.reply){
+            def r = this.reply
+            copy.reply = { c -> r(c) }
+        }
+       
+        // Make sure I don't call reply (as I've passed it on)
+        this.reply = null
+        
         return copy
     }
     
