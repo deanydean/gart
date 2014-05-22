@@ -1,0 +1,9 @@
+#
+# botd systemd config
+[Unit]
+Description=Bot Daemon Service
+
+[Service]
+Environment="BOT_HOME=/opt/bot" "JAVA_HOME=/opt/java" "GROOVY_HOME=/opt/groovy"
+ExecStart=/opt/bot/bot --daemon
+Restart=always
