@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Matt Dean
+ * Copyright 2014 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package bot.net
+package bot.swarm
 
 import bot.Bot
 import bot.comm.*
     
-@Grab("com.hazelcast:hazelcast:3.1.5")
+@Grab("com.hazelcast:hazelcast:3.1.4")
 import com.hazelcast.config.*
 import com.hazelcast.core.*
 
@@ -38,6 +38,9 @@ class Swarm extends Communicator implements MessageListener<Comm> {
 
     // Resources
     public static final RES_HEAP = "heap"
+
+    // Config
+    public static final FILE_STORE = "bot.swarm.FileMapStore"
     
     def ident
     def config
@@ -47,7 +50,11 @@ class Swarm extends Communicator implements MessageListener<Comm> {
         try{ it[0].publishComm(it[1]) }
         catch(e){ Bot.LOG.error "Swarm.. comm.. ARGH! $e" }
     }
- 
+
+    public Swarm(){
+        this(Bot.CONFIG.swarm)
+    }
+
     public Swarm(String name){
         super(ON_COMM)
 
@@ -68,6 +75,15 @@ class Swarm extends Communicator implements MessageListener<Comm> {
         this.ident = swarmConfig.id
         this.config = new Config()
         this.config.setInstanceName(this.ident)
+
+        if(swarmConfig.fileStore){
+            // Set map persistence
+            def map = this.config.getMapConfig("*")
+            def mapStore = new MapStoreConfig()
+            mapStore.setClassName(FILE_STORE)
+            mapStore.setEnabled(true)
+            map.setMapStoreConfig(mapStore)
+        }
 
         def network = this.config.getNetworkConfig()
 
