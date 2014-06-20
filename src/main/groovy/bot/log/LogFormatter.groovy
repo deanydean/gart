@@ -15,6 +15,8 @@
  */
 package bot.log
 
+import bot.Bot
+
 import java.util.logging.*
 import java.text.MessageFormat
 
@@ -23,7 +25,9 @@ import java.text.MessageFormat
  * @author deanydean
  */
 class LogFormatter extends Formatter {    
-    
+
+    def config = Bot.CONFIG.log
+
     @Override
     public String format(LogRecord record) {
         if(record.getLevel() == Level.INFO){
@@ -40,26 +44,26 @@ class LogFormatter extends Formatter {
 
     public String info(String message, Object[] params){
         try{
-            return "BOT> ${MessageFormat.format(message, params)}\n"
+            return "${config.name}> ${MessageFormat.format(message, params)}\n"
         }catch(e){
-            return "BOT> $message $params\n"
+            return "${config.name}> $message $params\n"
         }
     }
 
     public String error(LogRecord record){
         try{
-            return "BOT> X  ${MessageFormat.format(record.getMessage(),record.getParameters())}\n"
+            return "${config.name}> X  ${MessageFormat.format(record.getMessage(),record.getParameters())}\n"
         }catch(e){
-            return "BOT> X  ${record.getMessage()} ${record.getParameters()}\n"
+            return "${config.name}> X  ${record.getMessage()} ${record.getParameters()}\n"
         }
 
     }
 
     public String debug(LogRecord record){
         try{
-            return "BOT>>>  ${MessageFormat.format(record.getMessage(),record.getParameters())}\n"
+            return "${config.name}>>>  ${MessageFormat.format(record.getMessage(),record.getParameters())}\n"
         }catch(e){
-            return "BOT>>>  ${record.getMessage()} ${record.getParameters()}\n"
+            return "${config.name}>>>  ${record.getMessage()} ${record.getParameters()}\n"
         }
     }
 }
