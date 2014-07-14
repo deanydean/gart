@@ -44,6 +44,9 @@ class Swarm extends Communicator implements MessageListener<Comm> {
     
     def ident
     def config
+
+    // Hazelcast components
+    def hzConfig
     def hzInstance
 
     private static ON_COMM = { 
@@ -62,9 +65,9 @@ class Swarm extends Communicator implements MessageListener<Comm> {
         this.hzInstance = Hazelcast.getHazelcastInstanceByName(name)
 
         if(!this.hzInstance){
-            this.config = new Config()
-            this.config.setInstanceName(name)
-            this.hzInstance = Hazelcast.newHazelcastInstance(this.config)
+            this.hzConfig = new Config()
+            this.hzConfig.setInstanceName(name)
+            this.hzInstance = Hazelcast.newHazelcastInstance(this.hzConfig)
             this.init()
         }
     }
@@ -73,22 +76,35 @@ class Swarm extends Communicator implements MessageListener<Comm> {
         super(ON_COMM)
 
         this.ident = swarmConfig.id
-        this.config = new Config()
-        this.config.setInstanceName(this.ident)
+        this.config = swarmConfig
+        this.hzConfig = new Config()
+        this.hzConfig.setInstanceName(this.ident)
 
-        if(swarmConfig.fileStore){
+/*        if(swarmConfig.fileStore){
             // Set map persistence
             def map = this.config.getMapConfig("*")
             def mapStore = new MapStoreConfig()
             mapStore.setClassName(FILE_STORE)
             mapStore.setEnabled(true)
             map.setMapStoreConfig(mapStore)
-        }
+        }*/
 
-        def network = this.config.getNetworkConfig()
+        // Load all the named stores
+        def mapConfigs = [:]
+        this.config.stores.each { k, v ->
+            mapConfigs[k] = new MapConfig(k)
+            def storeConfig = new MapStoreConfig()
+            storeConfig.setEnabled(v.enabled)
+                .setImplementation(loadMapStore(v.mapStore, k))
+                .setWriteDelaySeconds(v.writeDelay)
+            mapConfigs[k].setMapStoreConfig(storeConfig)
+        }
+        this.hzConfig.setMapConfigs(mapConfigs)
+
+        def network = this.hzConfig.getNetworkConfig()
 
         // Enable ssl if required
-        if(swarmConfig.ssl && swarmConfig.ssl.enabled){
+        if(this.config.ssl && this.config.ssl.enabled){
             def sslConfig = new SSLConfig()
             sslConfig.setEnabled(true)
             sslConfig.setFactoryClassName(
@@ -108,21 +124,21 @@ class Swarm extends Communicator implements MessageListener<Comm> {
 
         // Setup local multicast comms
         join.getMulticastConfig()
-            .setEnabled(swarmConfig.enableMulticast)
-            .setMulticastPort(swarmConfig.mcPort)
+            .setEnabled(this.config.enableMulticast)
+            .setMulticastPort(this.config.mcPort)
         
         // Add tcp comms for all members
-        for(def member in swarmConfig.tcpMembers)
+        for(def member in this.config.tcpMembers)
             join.getTcpIpConfig().addMember(member)
 
         // Configure the interfaces to use
-        for(def iface in swarmConfig.interfaces)
+        for(def iface in this.config.interfaces)
             network.getInterfaces().addInterface(iface)
         
         join.getTcpIpConfig().setEnabled(true)
         network.getInterfaces().setEnabled(true)
             
-        this.hzInstance = Hazelcast.newHazelcastInstance(this.config)
+        this.hzInstance = Hazelcast.newHazelcastInstance(this.hzConfig)
         this.init()
     }
 
@@ -168,5 +184,10 @@ class Swarm extends Communicator implements MessageListener<Comm> {
         message.messageObject.set("from", message.publishingMember.uuid)
             .set("time", message.publishTime)
             .publish()
+    }
+
+    private loadMapStore(impl, name){
+        return this.class.classLoader.loadClass(
+            "bot.swarm.${impl}MapStore", true, false)?.newInstance(name)
     }
 }
