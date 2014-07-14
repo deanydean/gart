@@ -2,6 +2,7 @@ bot.conf
 www
 lib
 tmp
+var
 bot-ext
 .restart
 .botenv
