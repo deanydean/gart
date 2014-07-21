@@ -86,7 +86,6 @@ class Bot extends Communicator {
         // Init the oploader
         new OpRunner().adopt(this).onStart()
 
-
         // Set system properties
         if(CONFIG.net.proxy.host){
             System.properties << [ 
@@ -141,8 +140,8 @@ class Bot extends Communicator {
         new Communicator({ task(it[1].get("args")) }).subscribeTo(id)
     }
 
-    public void comm(id, complete=null, args=null){
-        new Comm(id).set("args", args).publish(complete)
+    public void comm(String id, complete=null, args=null, params=[:]){
+        new Comm(id).set("args", args).setAll(params).publish(complete)
     }
 
     private static getConfigFile(){

@@ -70,6 +70,11 @@ class Comm implements Serializable {
         data[id] = value
         return this
     }
+
+    public setAll(all){
+        all.each { k, v -> data[k] = v }
+        return this
+    }
     
     public publish(reply=null){
         this.reply = reply

@@ -80,15 +80,6 @@ class Swarm extends Communicator implements MessageListener<Comm> {
         this.hzConfig = new Config()
         this.hzConfig.setInstanceName(this.ident)
 
-/*        if(swarmConfig.fileStore){
-            // Set map persistence
-            def map = this.config.getMapConfig("*")
-            def mapStore = new MapStoreConfig()
-            mapStore.setClassName(FILE_STORE)
-            mapStore.setEnabled(true)
-            map.setMapStoreConfig(mapStore)
-        }*/
-
         // Load all the named stores
         def mapConfigs = [:]
         this.config.stores.each { k, v ->

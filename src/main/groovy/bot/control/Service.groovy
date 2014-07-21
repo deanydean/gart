@@ -28,7 +28,7 @@ public abstract class Service extends Communicator {
     def level
     def handleComm
 
-    static Closure onServiceEvent = { data ->
+    def static onServiceEvent = { data ->
         def service = data[0]
         def comm = data[1]
         switch(comm.id){
@@ -53,11 +53,6 @@ public abstract class Service extends Communicator {
         this.enabled = enabled
         this.level = level
         this.handleComm = handleComm
-        init()
-    }
-
-    void init(){
-        // Subscribe to comms for me
         this.subscribeTo("srv.${this.name}")
     }
 

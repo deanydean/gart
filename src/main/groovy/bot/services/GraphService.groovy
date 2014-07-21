@@ -27,7 +27,7 @@ import org.neo4j.tooling.*
  * A graph database service backed by an embedded Neo4j graph db
  * @author matt
  */
-class GraphService extends Service {
+public class GraphService extends Service {
     
     public static final NODE_LABEL = "node.label"
     public static final NODE_PROPS = "node.props"
@@ -48,10 +48,10 @@ class GraphService extends Service {
         try{
             def result
             switch(comm.id){
-                case "create": result = service.create(tx, comm); break
-                case "read": result = service.read(tx, comm); break;
-                case "update": result = service.update(tx, comm); break;
-                case "delete": result = services.delete(tx, comm); break;
+                case "create": result = service.create(comm); break
+                case "read": result = service.read(comm); break;
+                case "update": result = service.update(comm); break;
+                case "delete": result = services.delete(comm); break;
                 default: 
                     throw new Exception("Unknown comm ${comm}")
             }
@@ -87,7 +87,7 @@ class GraphService extends Service {
         LOG.debug "Creating node for ${comm}"
         
         def label = DynamicLabel.label(comm.get(NODE_LABEL))
-        def node = this.database.createNode(this.label)
+        def node = this.database.createNode(label)
         comm.get(NODE_PROPS).each { k, v -> node.setProperty(k, v) } 
         return node 
     }
@@ -98,8 +98,7 @@ class GraphService extends Service {
         def result = []
         def label = DynamicLabel.label(comm.get(NODE_LABEL))
         comm.get(NODE_PROPS).each { k, v ->
-            result << this.database.findNodesByLabelAndProperty(
-                this.label, k, v)
+            result << this.database.findNodesByLabelAndProperty(label, k, v)
         }
         return result
     }
