@@ -31,7 +31,8 @@ public class GraphService extends Service {
     
     public static final NODE_LABEL = "node.label"
     public static final NODE_PROPS = "node.props"
-    
+    public static final NODE_ID = "node.id"
+
     public static final OP_RESULT = "graph.op.result"
 
     def config
@@ -51,7 +52,7 @@ public class GraphService extends Service {
                 case "create": result = service.create(comm); break
                 case "read": result = service.read(comm); break;
                 case "update": result = service.update(comm); break;
-                case "delete": result = services.delete(comm); break;
+                case "delete": result = service.delete(comm); break;
                 default: 
                     throw new Exception("Unknown comm ${comm}")
             }
@@ -96,9 +97,25 @@ public class GraphService extends Service {
         LOG.debug "Reading nodes for ${comm}"
 
         def result = []
-        def label = DynamicLabel.label(comm.get(NODE_LABEL))
-        comm.get(NODE_PROPS).each { k, v ->
-            result << this.database.findNodesByLabelAndProperty(label, k, v)
+
+        if(comm.get(NODE_ID)){
+            comm.get(NODE_ID).each { result << this.database.getNodeById(it) }
+        }else if(comm.get(NODE_LABEL)){
+            def label = DynamicLabel.label(comm.get(NODE_LABEL))
+    
+            if(comm.get(NODE_PROPS)){
+                comm.get(NODE_PROPS).each { k, v ->
+                    result << this.database.findNodesByLabelAndProperty(
+                        label, k, v)
+                }
+            }else{
+                GlobalGraphOperations.at(this.database)
+                    .getAllNodesWithLabel(label).each { result << it }
+            }
+        }else{
+            GlobalGraphOperations.at(this.database).getAllNodes().each {
+                result << it 
+            }
         }
         return result
     }
