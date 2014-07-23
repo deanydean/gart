@@ -28,10 +28,13 @@ class WWWService extends Service {
     
     def config = Bot.CONFIG.www
     def http
-    
+
     public WWWService(){
         super("www", true, 9)
+    }
 
+    @Override
+    public void onStart(){
         if(!this.config.docPath){
             LOG.error "No www.docPath config for www service"
             return
@@ -39,10 +42,7 @@ class WWWService extends Service {
 
         Spark.externalStaticFileLocation(this.config.docPath)
         Spark.setPort(this.config.port)
-    }
-    
-    @Override
-    public void onStart(){
+
         Spark.get("/", { req, resp ->
             return "<h1>&lt;bot/&gt;</h1>"
         })
