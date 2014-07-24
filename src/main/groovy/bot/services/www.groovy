@@ -31,21 +31,18 @@ class WWWService extends Service {
 
     public WWWService(){
         super("www", true, 9)
-    }
-
-    @Override
-    public void onStart(){
-        if(!this.config.docPath){
+            if(!this.config.docPath){
             LOG.error "No www.docPath config for www service"
             return
         }
 
         Spark.externalStaticFileLocation(this.config.docPath)
         Spark.setPort(this.config.port)
+    }
 
-        Spark.get("/", { req, resp ->
-            return "<h1>&lt;bot/&gt;</h1>"
-        })
+
+    @Override
+    public void onStart(){
         Spark.get("/hello", { req, resp ->
             return "Hello World!"
         })
