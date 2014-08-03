@@ -19,6 +19,7 @@ import bot.*
 import bot.control.*
 
 @Grab("org.neo4j:neo4j:2.1.2")
+import org.neo4j.cypher.javacompat.*
 import org.neo4j.graphdb.*
 import org.neo4j.graphdb.factory.*
 import org.neo4j.tooling.*
@@ -33,11 +34,14 @@ public class GraphService extends Service {
     public static final NODE_PROPS = "node.props"
     public static final NODE_ID = "node.id"
 
+    public static final GRAPH_QUERY = "graph.query"
+
     public static final OP_RESULT = "graph.op.result"
 
     def config
     def database
-    
+    def exec
+
     def static graphComm = { comm, service ->
         if(!service.database){
             service.LOG.error "No database for ${comm}"
@@ -53,6 +57,7 @@ public class GraphService extends Service {
                 case "read": result = service.read(comm); break;
                 case "update": result = service.update(comm); break;
                 case "delete": result = service.delete(comm); break;
+                case "query": result = service.query(comm); break;
                 default: 
                     throw new Exception("Unknown comm ${comm}")
             }
@@ -78,6 +83,7 @@ public class GraphService extends Service {
         LOG.debug "Starting graph db service, loading ${this.config}"
         this.database = 
             new GraphDatabaseFactory().newEmbeddedDatabase(this.config.path)
+        this.exec = new ExecutionEngine(this.database)
     }
     
     public void onStop(){
@@ -151,5 +157,17 @@ public class GraphService extends Service {
     public delete(comm){
         LOG.debug "Deleting nodes for ${comm}"
         read(comm).each { it.delete() }
+    }
+
+    public query(comm){
+        LOG.debug "Performing query for ${comm}"
+        
+        def results = []
+        this.exec.execute(comm.get(GRAPH_QUERY)).each { row ->
+            def result = [:]
+            row.entrySet().each { col -> result[col.key] = col.value }
+            results << result
+        }
+        return results
     }
 }
