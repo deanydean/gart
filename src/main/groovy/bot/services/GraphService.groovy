@@ -75,7 +75,7 @@ public class GraphService extends Service {
     }
 
     def getAllProps = { node ->
-        def all = [:]
+        def all = ["id": node.getId()]
         node.getPropertyKeys().each { all[it] = node.getProperty(it) }
         return all
     }
@@ -108,7 +108,7 @@ public class GraphService extends Service {
     public read(comm){
         LOG.debug "Reading nodes for ${comm}"
 
-        def result = [:]
+        def result = []
 
         if(comm.get(NODE_ID)){
             comm.get(NODE_ID).each { 
@@ -122,23 +122,19 @@ public class GraphService extends Service {
                     def nodes = this.database.findNodesByLabelAndProperty(
                         label, k, v)
                     nodes.each { node ->
-                        if(!result[node.getId()]) 
-                            result[node.getId()] = getAllProps(node)
-                        else
-                            result[node.getId()] << getAllProps(node)
+                        result << getAllProps(node)
                     }
                 }
             }else{
                 GlobalGraphOperations.at(this.database)
                         .getAllNodesWithLabel(label).each { node ->
-                    result[node.getId()] = getAllProps(node)
-                    
+                    result << getAllProps(node)
                 }
             }
         }else{
             GlobalGraphOperations.at(this.database)
                     .getAllNodes().each { node ->
-                result[node.getId()] = getAllProps(node)
+                result << getAllProps(node)
             }
         }
         return result
