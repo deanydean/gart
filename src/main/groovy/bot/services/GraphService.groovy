@@ -73,6 +73,12 @@ public class GraphService extends Service {
             tx.close()
         }
     }
+
+    def getAllProps = { node ->
+        def all = [:]
+        node.getPropertyKeys().each { all[it] = node.getProperty(it) }
+        return all
+    }
     
     public GraphService(){
         super("graph", true, 9, graphComm)
@@ -105,7 +111,9 @@ public class GraphService extends Service {
         def result = [:]
 
         if(comm.get(NODE_ID)){
-            comm.get(NODE_ID).each { result << this.database.getNodeById(it) }
+            comm.get(NODE_ID).each { 
+                result << getAllProps(this.database.getNodeById(it))
+            }
         }else if(comm.get(NODE_LABEL)){
             def label = DynamicLabel.label(comm.get(NODE_LABEL))
     
@@ -114,28 +122,23 @@ public class GraphService extends Service {
                     def nodes = this.database.findNodesByLabelAndProperty(
                         label, k, v)
                     nodes.each { node ->
-                        if(!result[node.getId()]) result[node.getId()] = [:]
-                        node.getPropertyKeys().each { key ->
-                            result[node.getId()][key] = node.getProperty(key)
-                        }
+                        if(!result[node.getId()]) 
+                            result[node.getId()] = getAllProps(node)
+                        else
+                            result[node.getId()] << getAllProps(node)
                     }
                 }
             }else{
                 GlobalGraphOperations.at(this.database)
                         .getAllNodesWithLabel(label).each { node ->
-                    result[node.getId()] = [:]
-                    node.getPropertyKeys().each { key ->
-                        result[node.getId()][key] = node.getProperty(key)
-                    }
+                    result[node.getId()] = getAllProps(node)
+                    
                 }
             }
         }else{
             GlobalGraphOperations.at(this.database)
                     .getAllNodes().each { node ->
-                result[node.getId()] = [:]
-                node.getPropertyKeys().each { key ->
-                    result[node.getId()][key] = node.getProperty(key)
-                }
+                result[node.getId()] = getAllProps(node)
             }
         }
         return result
@@ -165,7 +168,14 @@ public class GraphService extends Service {
         def results = []
         this.exec.execute(comm.get(GRAPH_QUERY)).each { row ->
             def result = [:]
-            row.entrySet().each { col -> result[col.key] = col.value }
+            row.entrySet().each { col ->
+                def value = col.value
+
+                if(col.value instanceof Node)
+                    result << getAllProps(col.value)
+                else
+                    result[col.key] = col.value
+            }
             results << result
         }
         return results
