@@ -128,9 +128,8 @@ public class GraphService extends Service {
     
             if(comm.get(NODE_PROPS)){
                 comm.get(NODE_PROPS).each { k, v ->
-                    def nodes = this.database.findNodesByLabelAndProperty(
-                        label, k, v)
-                    nodes.each { nodes << getAllProps(it) }
+                    this.database.findNodesByLabelAndProperty(
+                        label, k, v).each { nodes << getAllProps(it) }
                 }
             }else{
                 GlobalGraphOperations.at(this.database)
