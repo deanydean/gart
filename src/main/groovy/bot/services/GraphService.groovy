@@ -109,12 +109,20 @@ public class GraphService extends Service {
     public read(comm){
         LOG.debug "Reading nodes for ${comm}"
 
-        def result = []
+        def results = []
+        getNodes(comm).each { node ->
+            results << getAllProps(node)
+        }
+
+        return results
+    }
+
+    public getNodes(comm){
+        LOG.debug "Getting nodes for ${comm}"
+        def nodes = []
 
         if(comm.get(NODE_ID)){
-            comm.get(NODE_ID).each { 
-                result << getAllProps(this.database.getNodeById(it))
-            }
+            comm.get(NODE_ID).each { nodes << this.database.getNodeById(it) }
         }else if(comm.get(NODE_LABEL)){
             def label = DynamicLabel.label(comm.get(NODE_LABEL))
     
@@ -122,30 +130,25 @@ public class GraphService extends Service {
                 comm.get(NODE_PROPS).each { k, v ->
                     def nodes = this.database.findNodesByLabelAndProperty(
                         label, k, v)
-                    nodes.each { node ->
-                        result << getAllProps(node)
-                    }
+                    nodes.each { nodes << getAllProps(it) }
                 }
             }else{
                 GlobalGraphOperations.at(this.database)
-                        .getAllNodesWithLabel(label).each { node ->
-                    result << getAllProps(node)
-                }
+                    .getAllNodesWithLabel(label).each { nodes << it }
             }
         }else{
             GlobalGraphOperations.at(this.database)
-                    .getAllNodes().each { node ->
-                result << getAllProps(node)
-            }
+                .getAllNodes().each { nodes << it }
         }
-        return result
+
+        return nodes
     }
      
     public update(comm){
         LOG.debug "Updating nodes for ${comm}"
         
         // Get nodes
-        def nodes = read(comm)
+        def nodes = getNodes(comm)
         if(nodes.isEmpty() && comm.get(NODE_AUTOCREATE)){
             create(comm)
         }else{
