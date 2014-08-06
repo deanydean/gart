@@ -33,6 +33,7 @@ public class GraphService extends Service {
     public static final NODE_LABEL = "node.label"
     public static final NODE_PROPS = "node.props"
     public static final NODE_ID = "node.id"
+    public static final NODE_AUTOCREATE = "node.autocreate"
 
     public static final GRAPH_QUERY = "graph.query"
 
@@ -145,12 +146,16 @@ public class GraphService extends Service {
         
         // Get nodes
         def nodes = read(comm)
-        nodes.each { node ->
-            comm.get(NODE_PROPS).each { k, v ->
-                node.setProperty(k, v)
+        if(nodes.isEmpty() && comm.get(NODE_AUTOCREATE)){
+            create(comm)
+        }else{
+            nodes.each { node ->
+                comm.get(NODE_PROPS).each { k, v ->
+                    node.setProperty(k, v)
+                }
             }
         }
-        return nodes
+        return []
     }
     
     public delete(comm){
