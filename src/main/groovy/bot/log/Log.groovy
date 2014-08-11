@@ -16,7 +16,7 @@
 package bot.log
 
 import bot.Bot
-import bot.comm.Comm
+import bot.comm.*
 
 import java.util.logging.*
 
@@ -31,15 +31,14 @@ class Log {
     public static final Level ERROR = Level.WARNING
     public static final Level INFO = Level.INFO
     public static final Level DEBUG = Level.FINE
-   
+    
     private long lastLogTime = 0l
     private boolean repeatLock = false
     private long repeatInterval = 1000l
-    private boolean async = false
     private String name
     
     def level = Bot.CONFIG.log.level
-
+    
     @SuppressWarnings("NonConstantLogger")
     private Logger logger
     private LogHandler handler
@@ -74,14 +73,6 @@ class Log {
         // Set levels
         if(this.level)
             this.setLevel(this.level)
-        
-        if(this.async){
-            if(this.logger != getLogger(CommsExchange.class)){
-                subscribe(LOG_COMMS_PREFIX+this.logger.getName())
-            }else{
-                this.async = false
-            }
-        }
     }
 
     public void setLevel(level){
@@ -93,16 +84,6 @@ class Log {
     
     public void setRepeatLock(boolean lock){
         this.repeatLock = lock;
-    }
-    
-    public void setAsync(boolean async){
-        if(async && !this.async){
-            subscribe(LOG_COMMS_PREFIX+this.logger.getName())
-        }else if(!async && this.async){
-            unsubscribe(LOG_COMMS_PREFIX+this.logger.getName())
-        }
-        
-        this.async = async
     }
     
     public static Logger getLogger(Class clazz){
@@ -130,7 +111,7 @@ class Log {
     public void info(String message, Object... args){
         if(!this.isRepeatLocked() && logger.isLoggable(Level.INFO)){
             String[] caller = getCallerInfo();
-            logp(Level.INFO, caller[0], caller[1], message, args);
+            logger.logp(Level.INFO, caller[0], caller[1], message, args);
             updateLastLogTime();
         }
     }
@@ -138,7 +119,7 @@ class Log {
     public void debug(String message, Object... args){
         if(!this.isRepeatLocked() && logger.isLoggable(Level.FINE)){
             String[] caller = getCallerInfo();
-            logp(Level.FINE, caller[0], caller[1], message, args);
+            logger.logp(Level.FINE, caller[0], caller[1], message, args);
             updateLastLogTime();
         }
     }
@@ -146,7 +127,7 @@ class Log {
     public void error(String message, Object... args){
         if(!this.isRepeatLocked() && logger.isLoggable(Level.WARNING)){
             String[] caller = getCallerInfo();
-            logp(Level.WARNING, caller[0], caller[1], message, args);
+            logger.logp(Level.WARNING, caller[0], caller[1], message, args);
             updateLastLogTime();
         }
     }
@@ -154,37 +135,14 @@ class Log {
     public void log(Level level, String message, Object... args){
         if(!this.isRepeatLocked() && logger.isLoggable(level)){
             String[] caller = getCallerInfo();
-            logp(level, caller[0], caller[1], message, args);
+            logger.logp(level, caller[0], caller[1], message, args);
             updateLastLogTime();
         }
     }
     
-    private void logp(Level level, String className, String methodName, 
-            String message, Object[] args){
-        if(this.async){
-            Comm log = new Comm(LOG_COMMS_PREFIX+this.logger.getName());
-            log.set(LogInfo.LEVEL, level);
-            log.set(LogInfo.CLASSNAME, className);
-            log.set(LogInfo.METHODNAME, methodName);
-            log.set(LogInfo.MESSAGE, message);
-            log.set(LogInfo.ARGS, args);
-            publish(log);
-        }else{
-            logger.logp(level, className, methodName, message, args);
-        }
-    }
-
     public void logFromStream(InputStream stream, Level level){
         Thread loggerThread = new Thread(new StreamLogger(stream, this, level));
         loggerThread.setDaemon(true);
         loggerThread.start();
     }
-
-    @Override
-    protected void onComm(Comm comm){
-        LogInfo info = new LogInfo(comm);
-        logger.logp(info.getLevel(), info.getClassName(), info.getMethodName(),
-            info.getMessage(), info.getArgs());
-    }
 }
-
