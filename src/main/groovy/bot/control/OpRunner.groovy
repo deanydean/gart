@@ -101,9 +101,15 @@ class OpRunner extends Service {
             else if(args instanceof String) args = [ args ]
         
             LOG.debug("Im going to ${args}")
-            def result = perform(args)
-            comm.set("result", result)
+            def result
+            try{
+                result = perform(args)
+            }catch(e){
+                LOG.debug "Failed to ${args} : $e"
+                result = e
+            }
 
+            comm.set("result", result)
             this.executor.submit(comm.reply as Runnable)
         } as Runnable)
     }
@@ -116,23 +122,6 @@ class OpRunner extends Service {
     }
     
     public perform(args){
-        // Split multiple ops
-        def ops = args.join(" ").split("and")
-        def results = []
-        def opsThreads = []
-        ops.each { op -> 
-            opsThreads << Thread.start {
-                LOG.debug "Performing op $op"
-                results << performOp(op.trim().split(" ") as List)
-            }
-        }
-
-        // Wait for all threads to finish
-        opsThreads.each { it.join() }
-        return (results.size() == 1) ? results[0] : null
-    }
-
-    private performOp(args){    
         // Work out if we have a script for the command
         def scriptName = null
         def op = []

@@ -42,11 +42,18 @@ class Bot extends Communicator {
     def shell = {
         if(!this.botsh){
             comm("op.greet", {
-                this.botsh = new Botsh([
-                    "BOT": this, 
-                    "LOG": this.LOG
-                ])
-                this.botsh.run()
+                LOG.debug "Starting botsh"
+                try{
+                    this.botsh = new Botsh([
+                        "BOT": this,
+                        "LOG": this.LOG
+                    ])
+                    LOG.debug "Running botsh $botsh"
+                    this.botsh.run()
+                }catch(Throwable t){
+                    LOG.debug "Failed to start botsh $t"
+                    t.printStackTrace()
+                }
                 comm("bot.stop")
             })
         }

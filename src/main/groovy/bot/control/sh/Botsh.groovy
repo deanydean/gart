@@ -37,7 +37,6 @@ public class Botsh extends Groovysh {
         return { shell ->
             // Load the default commands and the botsh commands
             def r = new XmlCommandRegistrar(shell, classLoader)
-            r.register(Groovysh.class.getResource("commands.xml"))
             r.register(Botsh.class.getResource("commands.xml"))
         }
     }
@@ -64,6 +63,7 @@ public class Botsh extends Groovysh {
     int run(final String[] args){
         io.setVerbosity(IO.Verbosity.QUIET)
         try{
+            Bot.LOG.debug "Running botsh ${args}"
             return super.run(args)
         }catch(e){
             Bot.LOG.error "${e.getMessage()}"
