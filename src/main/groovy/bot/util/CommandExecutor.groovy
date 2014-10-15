@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Matt Dean
+ * Copyright 2014 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ class CommandExecutor {
     
     def ident
     def command
-    def workingDir
+    def workingDir = null
+    def envVars = null
     def suppressOutput = false
     
     public CommandExecutor(ident, command){
@@ -35,16 +36,26 @@ class CommandExecutor {
     }
     
     public setWorkingDir(String workingDir){
-        this.workingDir = workingDir
+        this.workingDir = new File(workingDir)
+    }
+
+    public addEnvVar(key, value){
+        if(!this.envVars) this.envVars = []
+        this.envVars << "$key=$value"
+    }
+
+    public inheritEnv(excludes=[]){
+        def env = System.getenv()
+        env.each { k, v -> 
+            if(!excludes.contains(k))
+                this.addEnvVar(k, v)
+        }
     }
 
     public exec(){
         def start = System.currentTimeMillis()
-       
-        def proc = (this.workingDir) ? 
-            this.command.execute(null, new File(this.workingDir)) :
-            this.command.execute()
-
+      
+        def proc = this.command.execute(this.envVars, this.workingDir)
         Bot.LOG.logFromStream(proc.err, Log.ERROR)
         Bot.LOG.logFromStream(proc.in, Log.DEBUG)
 
