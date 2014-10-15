@@ -158,7 +158,7 @@ class Bot extends Communicator {
         // Load the master config
         def cfgFile = new File("$BOT_HOME/etc/bot.conf")
         if(cfgFile.exists())
-            config.putAll(new ConfigSlurper().parse(cfgFile.toURL()))
+            config.merge(new ConfigSlurper().parse(cfgFile.toURL()))
 
         return config
     }
