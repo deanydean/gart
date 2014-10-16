@@ -26,6 +26,14 @@ import java.text.MessageFormat
  */
 class LogFormatter extends Formatter {    
 
+    public static final COLOR_RED    = "\u001b[31m"
+    public static final COLOR_GREEN  = "\u001b[32m"
+    public static final COLOR_YELLOW = "\u001b[33m" 
+    public static final COLOR_CYAN   = "\u001b[36m"
+    public static final COLOR_WHITE  = "\u001b[37m"
+   
+    public static final DEFAULT_COLOR = COLOR_CYAN;
+
     def config = Bot.CONFIG.log
 
     @Override
@@ -43,27 +51,42 @@ class LogFormatter extends Formatter {
     }
 
     public String info(String message, Object[] params){
+        def prefix = "${COLOR_GREEN}${config.name}>  "
+
+        def log
         try{
-            return "${config.name}> ${MessageFormat.format(message, params)}\n"
+            log = "${MessageFormat.format(message, params)}"
         }catch(e){
-            return "${config.name}> $message $params\n"
+            log = "$message $params"
         }
+
+        return "$prefix $log $DEFAULT_COLOR\n" 
     }
 
     public String error(LogRecord record){
+        def prefix = "${COLOR_RED}${config.name}> X"
+       
+        def log
         try{
-            return "${config.name}> X  ${MessageFormat.format(record.getMessage(),record.getParameters())}\n"
+            log = "${MessageFormat.format(record.getMessage(),record.getParameters())}"
         }catch(e){
-            return "${config.name}> X  ${record.getMessage()} ${record.getParameters()}\n"
+            log = "${record.getMessage()} ${record.getParameters()}"
         }
+
+        return "$prefix $log $DEFAULT_COLOR\n"
 
     }
 
     public String debug(LogRecord record){
+        def prefix = "${COLOR_YELLOW}${config.name}>>>"
+
+        def log
         try{
-            return "${config.name}>>>  ${MessageFormat.format(record.getMessage(),record.getParameters())}\n"
+            log = "${MessageFormat.format(record.getMessage(),record.getParameters())}"
         }catch(e){
-            return "${config.name}>>>  ${record.getMessage()} ${record.getParameters()}\n"
+            log = "${prefix} ${record.getMessage()} ${record.getParameters()}"
         }
+
+        return "$prefix $log $DEFAULT_COLOR\n"
     }
 }
