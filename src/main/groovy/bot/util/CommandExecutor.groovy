@@ -57,7 +57,7 @@ class CommandExecutor {
       
         def proc = this.command.execute(this.envVars, this.workingDir)
         Bot.LOG.logFromStream(proc.err, Log.ERROR)
-        Bot.LOG.logFromStream(proc.in, Log.DEBUG)
+        Bot.LOG.logFromStream(proc.in, Log.INFO)
 
         proc.waitFor()
         def took = System.currentTimeMillis()-start
