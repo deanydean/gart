@@ -57,8 +57,8 @@ class Communicator extends DefaultActor {
 
         try{
             // Perform the action
-            this.onCommAction([ this, comm ])
-    
+            comm.result = this.onCommAction([ this, comm ])
+
             // Send a reply
             if(comm.reply instanceof Closure){
                 LOG.debug "Running reply closure to $comm"

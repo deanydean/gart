@@ -27,7 +27,8 @@ class Comm implements Serializable {
     public id
     public data = [:]
     public reply
-    
+    public result
+
     public Comm(id){
         this.id = id
     }
