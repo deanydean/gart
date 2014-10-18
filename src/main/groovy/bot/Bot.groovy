@@ -116,12 +116,16 @@ class Bot extends Communicator {
     void run(){
         LOG.debug "Running bot daemon?${this.options.daemon} op=${this.args}"
 
-        if(this.options.daemon)
-            comm("srv.loader.start", { LOG.info "Bot daemon started" })
-        else if(!this.args.isEmpty())
+        if(!this.args.isEmpty())
             comm("op", { this.terminate() }, this.args)
-        else            
-            shell()
+        else {
+            comm("srv.loader.start", { 
+                if(!this.options.daemon)
+                    shell()
+                else
+                    LOG.info "Bot daemon started" 
+            })
+        }
 
         this.join()
     }
