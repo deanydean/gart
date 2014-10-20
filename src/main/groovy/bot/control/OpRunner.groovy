@@ -144,7 +144,7 @@ class OpRunner extends Service {
         }
 
         if(scriptName){
-            return runOp(scriptName, args[op.size()..-1])
+            return runOp(scriptName, args.drop(op.size()))
         }else{
             LOG.error("I dont know how to {0}", args.join(" "))
             return null
