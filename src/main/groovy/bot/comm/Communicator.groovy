@@ -38,18 +38,20 @@ class Communicator extends DefaultActor {
         this.start()
     }
     
-    public void subscribeTo(String id){
+    public Communicator subscribeTo(String id){
         new Comm(CommExchange.SUBSCRIBE)
             .set(CommExchange.COMM_NAME, id)
             .set(CommExchange.COMMUNICATOR, this)
             .publish()
+        return this
     }
     
-    public void unsubscribeFrom(String id){
+    public Communicator unsubscribeFrom(String id){
         new Comm(CommExchange.UNSUBSCRIBE)
             .set(CommExchange.COMM_NAME, id)
             .set(CommExchange.COMMUNICATOR, this)
             .publish()
+        return this
     }
     
     protected final void onComm(Comm comm){
