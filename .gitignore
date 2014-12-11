@@ -3,7 +3,7 @@ www
 lib
 tmp
 var
-bot-ext
+/bot-*/
 .restart
 .botenv
 *.swp
