@@ -1,0 +1,39 @@
+#!/bin/bash
+# Run gart
+
+# Work out GART_HOME first (if needed)
+[ -z $GART_HOME ] && GART_HOME=$(dirname $0) 
+
+# Check for a gart environment
+[ -e $GART_HOME/etc/gartenv ] && { 
+    . ${GART_HOME}/etc/gartenv 
+}
+
+# Setup the environment
+PATH="$GART_HOME:$GART_HOME/src/main/scripts:$PATH"
+CLASSPATH="$GART_HOME/src/main/groovy:$GART_HOME/src/main/resources:$GART_CLASSPATH:$GART_HOME/lib/*"
+export GART_HOME CLASSPATH PATH
+
+# Make sure we're groovy enough
+which groovy > /dev/null || {
+    # Check if we know where it lives
+    [ -n "$GROOVY_HOME" ] && PATH="$PATH:${GROOVY_HOME}/bin" 
+}
+
+startgart=1
+while [ $startgart -eq 1 ]; do
+    # Start gart
+    groovy $JAVA_OPTS $GART_HOME/src/main/groovy/gart.groovy $@
+    
+    # By default, we've had enough.
+    startgart=0
+
+    # Check if gart is just restarting
+    [ -e ${GART_HOME}/.restart ] && {
+        startgart=1
+        rm ${GART_HOME}/.restart
+    }
+
+    continue
+done
+

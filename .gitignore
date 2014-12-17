@@ -1,11 +1,11 @@
-bot.conf
+gart.conf
 www
 lib
 tmp
 var
-/bot-*/
+/gart-*/
 .restart
-.botenv
+etc/gartenv
 *.swp
 *.log
 *.log.*

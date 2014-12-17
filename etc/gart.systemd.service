@@ -1,0 +1,9 @@
+#
+# Gart systemd config
+[Unit]
+Description=Gart Daemon Service
+
+[Service]
+Environment="GART_HOME=/opt/gart" "JAVA_HOME=/opt/java" "GROOVY_HOME=/opt/groovy"
+ExecStart=/opt/gart/gart --daemon
+#Restart=always
