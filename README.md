@@ -1,5 +1,5 @@
-gart-core
-=========
+gart - Groovy Asynchronous Runtime
+==================================
 
 A minimal async runtime written in Groovy
 
