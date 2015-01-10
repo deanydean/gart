@@ -54,8 +54,17 @@ class OpRunner extends Service {
         def scriptDirs = config.scriptsDirs
         for(scriptDir in scriptDirs)
             roots << new File(Gart.GART_HOME+"/"+scriptDir).toURL()
+
+        // Add ops dirs from GART_PATH
+        Gart.LOG.debug "Checking GART_PATH ${Gart.PATH} for scripts"
+        Gart.PATH.each {
+            def opsDir = new File(it+"/ops")
+            Gart.LOG.debug "Ops in ${it}? ${opsDir.exists()}" 
+            if(opsDir.exists()) roots << opsDir.toURL()
+        }
             
         // Load the script engine
+        Gart.LOG.debug "Loading scripts from $roots"
         this.scriptEngine = new GroovyScriptEngine(roots as URL[]);
     }
 

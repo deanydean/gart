@@ -53,7 +53,7 @@ public class ServiceLoader extends Service {
                 if(service.respondsTo("init"))
                     service.init()
                 else
-                    Gart.LOG.info "Uninited service ${service.name} loaded"
+                    Gart.LOG.debug "Uninited service ${service.name} loaded"
             }catch(ScriptException se){
                 Gart.LOG.error("ScriptException for {0} : {1}", f, se)
             }catch(ResourceException re){

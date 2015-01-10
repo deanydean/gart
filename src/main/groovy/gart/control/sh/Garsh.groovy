@@ -72,7 +72,7 @@ public class Garsh extends Groovysh {
     }
 
     public String renderPrompt(){
-        return "GART << "
+        return "gart << "
     }
 
     public void displayError(e){

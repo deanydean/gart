@@ -29,11 +29,15 @@ class Gart extends Communicator {
     // Setup the static members
     def static final ENV = System.getenv()
     def static final GART_HOME = ENV['GART_HOME']
-    def static final CONFIG = getConfigFile()
+    def static final GART_PATH = ENV['GART_PATH']
+    def static final CONFIG = getConfig()
     def static final LOG = new Log(Gart.class)
 
     // Static state that will change
     def static STORE = [:]
+
+    // Static path array of places to load RT stuff from
+    def static PATH
 
     def options
     def args
@@ -101,16 +105,19 @@ class Gart extends Communicator {
                 "http.nonProxyHosts": CONFIG.net.proxy.nonProxyHosts
             ]
         }
-        System.properties << [ 
-            "groovy.grape.report.downloads": "true"
-        ]
+
+        if(CONFIG.core.report.downloads){
+            System.properties << [ 
+                "groovy.grape.report.downloads": "true"
+            ]
+        }
 
         // Subscribe to gart comms
         this.subscribeTo("gart")
     }
     
     String toString(){
-        return "GART"
+        return "gart"
     }
 
     void run(){
@@ -155,19 +162,32 @@ class Gart extends Communicator {
         new Comm(id).set("args", args).setAll(params).publish(complete)
     }
 
-    private static getConfigFile(){
+    private static getConfig(){
         def config = new ConfigObject()
 
+        // Load default config from GART_HOME
+        loadConfigFiles(config, GART_HOME)
+
+        // Load all other config from GART_PATH
+        PATH = GART_PATH.tokenize(":")
+        PATH.each { loadConfigFiles(config, it) }
+
+        return config
+    }
+
+    private static loadConfigFiles(config, baseDir){
         // Load all config files from gart.conf.d
-        def configDir = new File("$GART_HOME/etc/gart.conf.d")
-        configDir.listFiles([accept:{ f -> f ==~ /.*?\.conf/ }] as FileFilter)
-            .toList().each {
-                config.putAll(new ConfigSlurper().parse(it.toURL()))
-            }
-        
+        def configDir = new File("$baseDir/etc/gart.conf.d")
+        def files = configDir.listFiles(
+            [accept:{ f -> f ==~ /.*?\.conf/ }] as FileFilter
+        )
+
+        if(files) files.toList().each {
+            config.putAll(new ConfigSlurper().parse(it.toURL()))
+        }
 
         // Load the master config
-        def cfgFile = new File("$GART_HOME/etc/gart.conf")
+        def cfgFile = new File("$baseDir/etc/gart.conf")
         if(cfgFile.exists())
             config.merge(new ConfigSlurper().parse(cfgFile.toURL()))
 
