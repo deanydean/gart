@@ -59,7 +59,7 @@ class HTTPWatch {
             response."304" = {
                 Gart.LOG.debug "${base}${url} hasn't changed"
             }
-            response.failed = {
+            response.failure = {
                 Gart.LOG.error "Check of ${base}${url} failed: $it.statusLine"
             }
         
