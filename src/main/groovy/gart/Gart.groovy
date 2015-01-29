@@ -106,7 +106,7 @@ class Gart extends Communicator {
             ]
         }
 
-        if(CONFIG.core.report.downloads){
+        if(CONFIG.report.downloads){
             System.properties << [ 
                 "groovy.grape.report.downloads": "true"
             ]

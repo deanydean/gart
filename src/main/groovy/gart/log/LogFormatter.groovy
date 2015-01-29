@@ -34,8 +34,6 @@ class LogFormatter extends Formatter {
    
     public static final DEFAULT_COLOR = COLOR_CYAN;
 
-    def config = Gart.CONFIG.log
-
     @Override
     public String format(LogRecord record) {
         if(record.getLevel() == Level.INFO){
@@ -51,7 +49,7 @@ class LogFormatter extends Formatter {
     }
 
     public String info(String message, Object[] params){
-        def prefix = "${COLOR_GREEN}${config.name}>  "
+        def prefix = "${COLOR_GREEN}${Gart.CONFIG.id}>  "
 
         def log
         try{
@@ -64,7 +62,7 @@ class LogFormatter extends Formatter {
     }
 
     public String error(LogRecord record){
-        def prefix = "${COLOR_RED}${config.name}> X"
+        def prefix = "${COLOR_RED}${Gart.CONFIG.id}> X"
        
         def log
         try{
@@ -78,7 +76,7 @@ class LogFormatter extends Formatter {
     }
 
     public String debug(LogRecord record){
-        def prefix = "${COLOR_YELLOW}${config.name}>>>"
+        def prefix = "${COLOR_YELLOW}${Gart.CONFIG.id}>>>"
 
         def log
         try{
