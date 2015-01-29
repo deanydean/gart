@@ -23,7 +23,7 @@ which groovy > /dev/null || {
 startgart=1
 while [ $startgart -eq 1 ]; do
     # Start gart
-    groovy $JAVA_OPTS $GART_HOME/src/main/groovy/gart.groovy $@
+    groovy $GART_HOME/src/main/groovy/gart.groovy $@
     
     # By default, we've had enough.
     startgart=0

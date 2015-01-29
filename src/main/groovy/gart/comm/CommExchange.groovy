@@ -42,7 +42,7 @@ class CommExchange extends Communicator {
     private ConcurrentHashMap<String,List<Communicator>> register = 
         new ConcurrentHashMap<String,List<Communicator>>();
         
-    def handlerCount = Gart.CONFIG.core.threads
+    def handlerCount = Gart.CONFIG.threads
 
     private CommExchange(){
         super({ commInfo ->

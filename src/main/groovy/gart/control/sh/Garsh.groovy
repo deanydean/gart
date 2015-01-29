@@ -72,7 +72,7 @@ public class Garsh extends Groovysh {
     }
 
     public String renderPrompt(){
-        return "gart << "
+        return "${Gart.CONFIG.id} << "
     }
 
     public void displayError(e){
