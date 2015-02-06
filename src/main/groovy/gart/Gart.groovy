@@ -169,8 +169,10 @@ class Gart extends Communicator {
         loadConfigFiles(config, GART_HOME)
 
         // Load all other config from GART_PATH
-        PATH = GART_PATH.tokenize(":")
-        PATH.each { loadConfigFiles(config, it) }
+        if(GART_PATH){
+            PATH = GART_PATH.tokenize(":")
+            PATH.each { loadConfigFiles(config, it) }
+        }
 
         return config
     }
