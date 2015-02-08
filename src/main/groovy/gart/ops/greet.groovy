@@ -5,7 +5,7 @@ def rng = new Random()
 def greets = [
     "What?",
     "What do you want?",
-    "Hi! Im Gart. How can I help you?", 
+    "Hi! Im ${GART.CONFIG.id.capitalize()}. How can I help you?", 
     "Whhhaasssaaaappppp?!",
     "Hey hey hey"
 ]
