@@ -119,7 +119,7 @@ class OpRunner extends Service {
             }
 
             comm.set("result", result)
-            this.executor.submit(comm.reply as Runnable)
+            this.executor.submit({ comm.reply(result) } as Runnable)
         } as Runnable)
     }
     
@@ -163,18 +163,19 @@ class OpRunner extends Service {
     public runOp(name, args){
         LOG.debug "Running script $name $args"
 
-        // Run the op script
+        // Configure the op environment
         def binding = new Binding()
-        binding.setVariable("args", args)
-        binding.setVariable("GART", this.gart)
-        binding.setVariable("LOG", this.gart.LOG)
-        binding.setVariable("CONFIG", this.gart.CONFIG)
+        binding.args = args
+        binding.GART = this.gart
+        binding.LOG = this.gart.LOG
+        binding.CONFIG = this.gart.CONFIG
+
+        // Run the op script
         this.scriptEngine.run(name, binding)
+
+        LOG.debug "Result from ${name} was ${binding.result}"
         
-        if(binding.hasVariable("result"))
-            return binding.getVariable("result")
-            
-        return null
+        return binding.result 
     }
 }
 
