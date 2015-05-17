@@ -56,8 +56,8 @@ class OpRunner extends Service {
             roots << new File(Gart.GART_HOME+"/"+scriptDir).toURL()
 
         // Add ops dirs from GART_PATH
-        Gart.LOG.debug "Checking GART_PATH ${Gart.PATH} for scripts"
-        Gart.PATH.each {
+        Gart.LOG.debug "Checking GART_PATH ${Gart.GART_PATH} for scripts"
+        Gart.getGartPath().each {
             def opsDir = new File(it+"/ops")
             Gart.LOG.debug "Ops in ${it}? ${opsDir.exists()}" 
             if(opsDir.exists()) roots << opsDir.toURL()
