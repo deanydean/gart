@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Matt Dean
+ * Copyright 2015 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -168,7 +168,6 @@ class Gart extends Communicator {
 
         // Load all other config from GART_PATH
         if(GART_PATH){
-            println "Using GART_PATH: $GART_PATH"
             PATH = GART_PATH.tokenize(":")
             PATH.reverseEach { loadConfigFiles(config, it) }
         }
