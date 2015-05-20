@@ -30,13 +30,7 @@ class Gart extends Communicator {
     def static final ENV = System.getenv()
     def static final GART_HOME = ENV['GART_HOME']
     def static final GART_PATH = ENV['GART_PATH']
-    
-    // Static path array of places to load RT stuff from
-    def static getGartPath = {
-        return (!GART_PATH) ? [] : GART_PATH.tokenize(":")
-    }
-
-    // Now load global config and logger    
+    def static PATH = []
     def static final CONFIG = getConfig()
     def static final LOG = new Log(Gart.class)
 
@@ -172,9 +166,12 @@ class Gart extends Communicator {
         // Load default config from GART_HOME
         loadConfigFiles(config, GART_HOME)
 
-        // Load all other config in reverse order so the start 
-        // of the path takes priority
-        getGartPath().reverseEach { loadConfigFiles(config, it) }
+        // Load all other config from GART_PATH
+        if(GART_PATH){
+            println "Using GART_PATH: $GART_PATH"
+            PATH = GART_PATH.tokenize(":")
+            PATH.reverseEach { loadConfigFiles(config, it) }
+        }
 
         return config
     }
@@ -186,7 +183,6 @@ class Gart extends Communicator {
             [accept:{ f -> f ==~ /.*?\.conf/ }] as FileFilter
         )
 
-        // Load the lists in reverse so that last files is loaded first
         if(files) files.toList().reverseEach {
             config.putAll(new ConfigSlurper().parse(it.toURL()))
         }
