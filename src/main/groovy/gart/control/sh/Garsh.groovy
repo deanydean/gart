@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Matt Dean
+ * Copyright 2015 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,9 +19,6 @@ import gart.Gart
 
 import org.codehaus.groovy.tools.shell.*
 import org.codehaus.groovy.tools.shell.util.*
-
-// Import jline for history functions
-//@Grab("jline:jline:2.10")
 
 /**
  * A basic groovy shell for gart
@@ -60,7 +57,7 @@ public class Garsh extends Groovysh {
         return binding
     }
 
-    int run(final String[] args){
+    int run(args=""){
         io.setVerbosity(IO.Verbosity.QUIET)
         try{
             Gart.LOG.debug "Running garsh ${args}"
@@ -68,10 +65,14 @@ public class Garsh extends Groovysh {
         }catch(e){
             Gart.LOG.error "${e.getMessage()}"
             Gart.LOG.debug "$e"
+            return 1
         }
     }
 
     public String renderPrompt(){
+        // Autoflush the previous command
+        this.history.flush()
+        
         return "${Gart.CONFIG.id} << "
     }
 
