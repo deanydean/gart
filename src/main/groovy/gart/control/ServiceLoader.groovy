@@ -76,5 +76,6 @@ public class ServiceLoader extends Service {
     }
 
     public void onStop(){
+        Gart.LOG.error "Cannot stop service loader"
     }
 }
