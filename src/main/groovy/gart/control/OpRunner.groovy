@@ -109,12 +109,12 @@ class OpRunner extends Service {
             }
             else if(args instanceof String) args = [ args ]
         
-            LOG.debug("Im going to ${args}")
+            LOG.debug("I am going to ${args}")
             def result
             try{
                 result = perform(args)
             }catch(e){
-                LOG.debug "Failed to ${args} : $e"
+                LOG.error "Failed to ${args} : $e"
                 result = e
             }
 
