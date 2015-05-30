@@ -169,13 +169,13 @@ class OpRunner extends Service {
         binding.GART = this.gart
         binding.LOG = this.gart.LOG
         binding.CONFIG = this.gart.CONFIG
-
+        binding.result = null
+        
         // Run the op script
         this.scriptEngine.run(name, binding)
 
         LOG.debug "Result from ${name} was ${binding.result}"
-        
-        return binding.result 
+        return binding.result
     }
 }
 
