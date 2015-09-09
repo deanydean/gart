@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <commands>
+  <command>gart.control.sh.CommCommand</command>
+  <command>gart.control.sh.LogCommand</command>
   <command>gart.control.sh.OpCommand</command>
 </commands>

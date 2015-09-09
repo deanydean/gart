@@ -88,6 +88,11 @@ public class GraphService extends Service {
     
     public void onStart(){
         LOG.debug "Starting graph db service, loading ${this.config}"
+        if(!this.config.path){
+            LOG.error "Cannot start graph, no path defined in config"
+            return
+        }
+        
         this.database = 
             new GraphDatabaseFactory().newEmbeddedDatabase(this.config.path)
         this.exec = new ExecutionEngine(this.database)
@@ -172,8 +177,6 @@ public class GraphService extends Service {
         this.exec.execute(comm.get(GRAPH_QUERY)).each { row ->
             def result = [:]
             row.entrySet().each { col ->
-                def value = col.value
-
                 if(col.value instanceof Node)
                     result << getAllProps(col.value)
                 else

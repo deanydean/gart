@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Matt Dean
+ * Copyright 2015 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,14 +30,12 @@ class Gart extends Communicator {
     def static final ENV = System.getenv()
     def static final GART_HOME = ENV['GART_HOME']
     def static final GART_PATH = ENV['GART_PATH']
+    def static PATH = []
     def static final CONFIG = getConfig()
     def static final LOG = new Log(Gart.class)
 
     // Static state that will change
     def static STORE = [:]
-
-    // Static path array of places to load RT stuff from
-    def static PATH
 
     def options
     def args
@@ -171,7 +169,7 @@ class Gart extends Communicator {
         // Load all other config from GART_PATH
         if(GART_PATH){
             PATH = GART_PATH.tokenize(":")
-            PATH.each { loadConfigFiles(config, it) }
+            PATH.reverseEach { loadConfigFiles(config, it) }
         }
 
         return config
@@ -184,7 +182,7 @@ class Gart extends Communicator {
             [accept:{ f -> f ==~ /.*?\.conf/ }] as FileFilter
         )
 
-        if(files) files.toList().each {
+        if(files) files.toList().reverseEach {
             config.putAll(new ConfigSlurper().parse(it.toURL()))
         }
 

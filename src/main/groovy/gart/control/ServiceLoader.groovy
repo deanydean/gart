@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Matt Dean
+ * Copyright 2015 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import gart.comm.Communicator
 public class ServiceLoader extends Service {
 
     private config = Gart.CONFIG.services
+    private classloader = new GroovyClassLoader()
+    private services = []
 
     public ServiceLoader(){
         super("loader", true)
@@ -42,18 +44,25 @@ public class ServiceLoader extends Service {
                     }
         }
 
-        def classLoader = new GroovyClassLoader()
         scripts.sort().each { script ->
             try{
                 // Create the class for the script
-                def serviceClass = classLoader.parseClass(new File(script));
+                def serviceClass = classloader.parseClass(new File(script));
 
+                // Make sure we don't already have this service loaded
+                if(services.find { it.class == serviceClass }){
+                    Gart.LOG.debug "Skipping loaded service ${serviceClass}"
+                    return
+                }
+                
                 // Create an instance
                 def service = serviceClass.newInstance()
                 if(service.respondsTo("init"))
                     service.init()
                 else
                     Gart.LOG.debug "Uninited service ${service.name} loaded"
+                    
+                this.services << service
             }catch(ScriptException se){
                 Gart.LOG.error("ScriptException for {0} : {1}", f, se)
             }catch(ResourceException re){
@@ -67,5 +76,6 @@ public class ServiceLoader extends Service {
     }
 
     public void onStop(){
+        Gart.LOG.error "Cannot stop service loader"
     }
 }
