@@ -52,6 +52,10 @@ class CommandExecutor {
         }
     }
 
+    public leftShift(commandArgs){
+        this.command << commandArgs
+    }
+
     public exec(){
         def start = System.currentTimeMillis()
       
