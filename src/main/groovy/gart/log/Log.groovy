@@ -140,9 +140,10 @@ class Log {
         }
     }
     
-    public void logFromStream(InputStream stream, Level level){
+    public void logFromStream(InputStream stream, Level level, 
+            boolean daemon=true){
         Thread loggerThread = new Thread(new StreamLogger(stream, this, level));
-        loggerThread.setDaemon(false);
+        loggerThread.setDaemon(daemon);
         loggerThread.start();
     }
 }

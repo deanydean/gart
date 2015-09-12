@@ -59,11 +59,10 @@ class CommandExecutor {
     public exec(){
         def start = System.currentTimeMillis()
       
-        //def proc = this.command.execute(this.envVars, this.workingDir)
         this.processBuilder.command(this.command);
         def proc = this.processBuilder.start();
-        Gart.LOG.logFromStream(proc.err, Log.ERROR)
-        Gart.LOG.logFromStream(proc.in, Log.INFO)
+        Gart.LOG.logFromStream(proc.err, Log.ERROR, false)
+        Gart.LOG.logFromStream(proc.in, Log.INFO, false)
 
         proc.waitFor()
         def took = System.currentTimeMillis()-start
