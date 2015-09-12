@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Matt Dean
+ * Copyright 2015 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -142,7 +142,7 @@ class Log {
     
     public void logFromStream(InputStream stream, Level level){
         Thread loggerThread = new Thread(new StreamLogger(stream, this, level));
-        loggerThread.setDaemon(true);
+        loggerThread.setDaemon(false);
         loggerThread.start();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Matt Dean
+ * Copyright 2015 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,26 +26,26 @@ class CommandExecutor {
     
     def ident
     def command
-    def workingDir = null
-    def envVars = null
     def suppressOutput = false
+    def processBuilder
     
     public CommandExecutor(ident, command){
         this.ident = ident
         this.command = command
+        this.processBuilder = new ProcessBuilder()
     }
     
     public setWorkingDir(String workingDir){
-        this.workingDir = new File(workingDir)
+        this.processBuilder.directory(new File(workingDir))
     }
 
     public addEnvVar(key, value){
-        if(!this.envVars) this.envVars = []
-        this.envVars << "$key=$value"
+        this.processBuilder.environment() << "$key=$value"
     }
 
     public inheritEnv(excludes=[]){
         def env = System.getenv()
+        this.processBuilder.environment().clear();
         env.each { k, v -> 
             if(!excludes.contains(k))
                 this.addEnvVar(k, v)
@@ -59,7 +59,9 @@ class CommandExecutor {
     public exec(){
         def start = System.currentTimeMillis()
       
-        def proc = this.command.execute(this.envVars, this.workingDir)
+        //def proc = this.command.execute(this.envVars, this.workingDir)
+        this.processBuilder.command(this.command);
+        def proc = this.processBuilder.start();
         Gart.LOG.logFromStream(proc.err, Log.ERROR)
         Gart.LOG.logFromStream(proc.in, Log.INFO)
 
@@ -78,8 +80,4 @@ class CommandExecutor {
         }
         return result
     }
-    
-    
-    
 }
-
