@@ -40,7 +40,7 @@ class CommandExecutor {
     }
 
     public addEnvVar(key, value){
-        this.processBuilder.environment() << "$key=$value"
+        this.processBuilder.environment().put(key, value)
     }
 
     public inheritEnv(excludes=[]){
@@ -59,7 +59,7 @@ class CommandExecutor {
     public exec(){
         def start = System.currentTimeMillis()
       
-        this.processBuilder.command(this.command);
+        this.processBuilder.command(this.command as String[]);
         def proc = this.processBuilder.start();
         Gart.LOG.logFromStream(proc.err, Log.ERROR, false)
         Gart.LOG.logFromStream(proc.in, Log.INFO, false)
