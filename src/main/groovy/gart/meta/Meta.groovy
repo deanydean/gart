@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Matt Dean
+ * Copyright 2015 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class Meta {
             .publish({ actor.proceed(it) })
         actor.pause()
 
-        return actor.metaReply.get("result")
+        return actor.metaReply.result
     }
 
     def propertyMissing(String name){
@@ -52,7 +52,7 @@ public class Meta {
             .publish({ actor.proceed(it) })
         actor.pause()
 
-        return actor.metaReply.get("value")
+        return actor.metaReply.result
     }
 
     def void propertyMissing(String name, value){
@@ -63,5 +63,15 @@ public class Meta {
             .set("value", value)
             .publish({ actor.proceed() })
         actor.pause()
+    }
+    
+    static Meta asMeta(obj){
+        def id = "${obj.hashCode()}"
+        
+        // Create the meta proxy
+        new MetaProxy(obj).subscribeTo("meta.$id")
+        
+        // Return a new meta
+        return new Meta("$id")
     }
 }
