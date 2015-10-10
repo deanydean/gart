@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Matt Dean
+ * Copyright 2015 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ class Swarm extends Communicator implements MessageListener<Comm> {
     public Swarm(Object swarmConfig){
         super(ON_COMM)
 
-        this.ident = swarmConfig.id
+        this.ident = (swarmConfig.id) ? swarmConfig.id : Gart.CONFIG.id
         this.config = swarmConfig
         this.hzConfig = new Config()
         this.hzConfig.setInstanceName(this.ident)
@@ -106,29 +106,38 @@ class Swarm extends Communicator implements MessageListener<Comm> {
             network.setSSLConfig(sslConfig)
         }
 
-        // Set the swarm ports
-        network.setPort(swarmConfig.port)        
-        network.setPortAutoIncrement(true)
-        
+        if(this.config.port){
+            // Set the swarm ports
+            network.setPort(this.config.port)        
+            network.setPortAutoIncrement(true)
+        }
+
         // Configure joining the swarm
         def join = network.getJoin()
 
-        // Setup local multicast comms
-        join.getMulticastConfig()
-            .setEnabled(this.config.enableMulticast)
-            .setMulticastPort(this.config.mcPort)
-        
-        // Add tcp comms for all members
-        for(def member in this.config.tcpMembers)
-            join.getTcpIpConfig().addMember(member)
+        if(this.config.enableMulticase){
+            // Setup local multicast comms
+            join.getMulticastConfig()
+                .setEnabled(this.config.enableMulticast)
+                .setMulticastPort(this.config.mcPort)
+        }
 
-        // Configure the interfaces to use
-        for(def iface in this.config.interfaces)
-            network.getInterfaces().addInterface(iface)
-        
-        join.getTcpIpConfig().setEnabled(true)
-        network.getInterfaces().setEnabled(true)
+        if(this.config.tcpMembers){
+            // Add tcp comms for all members
+            for(def member in this.config.tcpMembers)
+                join.getTcpIpConfig().addMember(member)
             
+            join.getTcpIpConfig().setEnabled(true)
+        }
+
+        if(this.config.interfaces){
+            // Configure the interfaces to use
+            for(def iface in this.config.interfaces)
+                network.getInterfaces().addInterface(iface)
+        
+            network.getInterfaces().setEnabled(true)
+        }
+
         this.hzInstance = Hazelcast.newHazelcastInstance(this.hzConfig)
         this.init()
     }
