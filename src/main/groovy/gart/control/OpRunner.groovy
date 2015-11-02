@@ -131,33 +131,56 @@ class OpRunner extends Service {
     }
     
     public perform(args){
-        // Work out if we have a script for the command
-        def scriptName = null
-        def op = []
-        args.find { arg ->
-            op << arg
-            def name = op.join("/")+".groovy"
-           
-            LOG.debug "Loading script $name"
-            try{
-                this.scriptEngine.loadScriptByName(name)
-                scriptName = name
-                return true
-            }catch(ScriptException se){
-                LOG.error("ScriptException for {0} : {1}", name, se)
-            }catch(ResourceException re){
-                LOG.debug("ResourceException for {0} : {1}", name, re)
-            }
-            
-            return false
-        }
-
+        def (scriptName,scriptArgs) = findScriptInVocab(args)
+        
+        if(!scriptName)
+            (scriptName,scriptArgs) = findScriptByPath(args)
+        
         if(scriptName){
-            return runOp(scriptName, args.drop(op.size()))
+            return runOp(scriptName, scriptArgs)
         }else{
             LOG.error("I dont know how to {0}", args.join(" "))
             return null
         }
+    }
+    
+    public findScriptInVocab(args){
+        return config.vocab.findResult([null,null], { match, params ->
+            // Get the matcher
+            def matcher = "${args.join(" ")}" =~ /${match}/
+            if(matcher.matches()){
+                // We understand the op, return the script and the params
+                LOG.debug "Matched ${args} to \"${match}\""
+                LOG.debug "Using (params=${params} args=${matcher[0]}"
+                return ["${params.script}.groovy" , matcher[0]]
+            }
+            
+            // No result
+            return null
+        })
+    }
+    
+    public findScriptByPath(args){
+        // Work out if we have a script for the command
+        def scriptName = null
+        def op = []
+        return args.findResult([null,null], { arg ->
+            op << arg
+            def name = op.join("/")+".groovy"
+            
+            LOG.debug "Loading script $name"
+            try{
+                this.scriptEngine.loadScriptByName(name)
+            }catch(ScriptException se){
+                LOG.error("ScriptException for {0} : {1}", name, se)
+                throw se
+            }catch(ResourceException re){
+                LOG.debug("ResourceException for {0} : {1}", name, re)
+                throw re
+            }
+            
+            return [name, args.drop(op.size())]
+        })
     }
         
     public runOp(name, args){
