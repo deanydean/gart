@@ -173,10 +173,10 @@ class OpRunner extends Service {
                 this.scriptEngine.loadScriptByName(name)
             }catch(ScriptException se){
                 LOG.error("ScriptException for {0} : {1}", name, se)
-                throw se
+                return null
             }catch(ResourceException re){
                 LOG.debug("ResourceException for {0} : {1}", name, re)
-                throw re
+                return null
             }
             
             return [name, args.drop(op.size())]
