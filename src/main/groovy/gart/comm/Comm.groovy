@@ -48,10 +48,8 @@ class Comm implements Serializable {
         // Copy
         def copy = new Comm(consumed)
         copy.data << this.data
-        if(this.reply){
-            def r = this.reply
-            copy.reply = { c -> r(c) }
-        }
+        if(this.reply)
+            copy.reply = this.reply
        
         // Make sure I don't call reply (as I've passed it on)
         this.reply = null
