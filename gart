@@ -12,7 +12,9 @@
 # Setup the environment
 PATH="$GART_HOME:$GART_HOME/src/main/scripts:$PATH"
 CLASSPATH="$GART_HOME/src/main/groovy:$GART_HOME/src/main/resources:$GART_CLASSPATH:$GART_HOME/lib/*"
-export GART_HOME CLASSPATH PATH
+JAVA_OPTS="$JAVA_OPTS 
+-Djava.util.logging.config.file=${GART_HOME}/etc/logging.properties"
+export GART_HOME CLASSPATH PATH JAVA_OPTS
 
 # Make sure we're groovy enough
 which groovy > /dev/null || {
