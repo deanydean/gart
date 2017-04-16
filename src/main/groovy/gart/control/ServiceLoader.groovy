@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Matt Dean
+ * Copyright 2017 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,24 +26,34 @@ public class ServiceLoader extends Service {
 
     public ServiceLoader(){
         super("loader", true)
-        
-        // Load services from service dirs
-        def scriptsDirs = config.scriptsDirs
-        Gart.LOG.debug("Loading service scripts from ${scriptsDirs}")
     }
     
     public void onStart(){
-        // Detect all services
-        def scripts = []
+        // Find all service script dirs
+        def servicesDirs = []
         for(scriptsDir in config.scriptsDirs){
-            def dir = new File("${Gart.GART_HOME}/$scriptsDir").list(
-                [accept:{d, f-> f ==~ /.*?\.groovy*/ }] as FilenameFilter)
-                    .each { f ->
-                        Gart.LOG.debug("Got service $f")
-                        scripts << "${Gart.GART_HOME}/${scriptsDir}/$f"
-                    }
+            servicesDirs << new File("${Gart.GART_HOME}/$scriptsDir")
+        }
+        Gart.LOG.debug "Checking GART_PATH ${Gart.PATH} for services"
+        Gart.PATH.each {
+            def servicesDir = new File(it+"/services")
+            Gart.LOG.debug "Services in ${it}? ${servicesDir.exists()}"
+            if(servicesDir.exists()) servicesDirs << servicesDir
+        }
+        
+        Gart.LOG.debug("Loading service scripts from ${servicesDirs}")
+
+        // Add all scripts from each services dir
+        def scripts = []
+        servicesDirs.each { dir ->
+            dir.list([accept:{d, f-> f ==~ /.*?\.groovy*/ }] as FilenameFilter)
+                .each { f ->
+                    Gart.LOG.debug("Got service $f")
+                    scripts << "${dir}/$f"
+                }
         }
 
+        // Load each service script
         scripts.sort().each { script ->
             try{
                 // Create the class for the script

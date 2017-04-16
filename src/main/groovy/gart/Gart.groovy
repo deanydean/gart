@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Matt Dean
+ * Copyright 2017 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -152,10 +152,17 @@ class Gart extends Communicator {
         })
     }
 
-    public void on(id, task){
+    /**
+     * When $id happens, do $tasks.
+     */
+    public void on(id, Closure task){
         new Communicator({ task(it[1].get("args")) }).subscribeTo(id)
     }
 
+    /**
+     * Trigger $id with $args and $params.
+     * When complete, do $complete.
+     */
     public void comm(String id, complete=null, args=null, params=[:]){
         new Comm(id).set("args", args).setAll(params).publish(complete)
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Matt Dean
+ * Copyright 2017 Matt Dean
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,6 +41,11 @@ class CommandExecutor {
 
     public addEnvVar(key, value){
         this.processBuilder.environment().put(key, value)
+    }
+
+    public addToEnvVar(key, value, delim=":"){
+        def var = this.processBuilder.environment().get(key)
+        this.processBuilder.environment().put(key, "${var}${delim}${value}")
     }
 
     public inheritEnv(excludes=[]){

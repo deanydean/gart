@@ -9,11 +9,19 @@ FROM debian:8
 RUN apt-get update
 RUN apt-get dist-upgrade -y
 
-# Install all runtime tools
-RUN apt-get install -y groovy2 git
+# Install all runtime tools from the debian repos
+RUN apt-get install -y unzip openjdk-7-jre-headless curl git
+
+# Set up the env for runtime
+ENV JAVA_HOME /usr
+ENV SDKMAN .sdkman/bin/sdkman-init.sh
+
+# Install SDKman and groovy
+RUN curl -s get.sdkman.io | bash
+RUN /bin/bash -c 'source $HOME/$SDKMAN; sdk install groovy'
 
 # Get Gart
 RUN git clone http://github.com/deanydean/gart /opt/gart
 
 # Run Gart on startup
-CMD GROOVY_HOME=/usr JAVA_HOME=/usr /opt/gart/gart
+CMD /bin/bash -c 'source $HOME/$SDKMAN; /opt/gart/gart'
