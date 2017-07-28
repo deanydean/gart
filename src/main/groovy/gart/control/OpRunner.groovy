@@ -142,7 +142,16 @@ class OpRunner extends Service {
             return runOp(scriptName, scriptArgs)
         }
         
-        // There is no op script, do we have a shell script?
+        // There is no op script, 
+        
+        // Do we have a groovy script?
+        ( scriptName , scriptArgs ) = findOpByGroovyScriptFile(args)
+        if ( scriptName ){
+            // Found a groovy script, run it
+            return runOp(scriptName, scriptArgs)
+        }
+
+        // Do we have a shell script?
         ( scriptName , scriptArgs ) = findOpByShellScriptFile(args)
         if ( scriptName ){
             // Found a shell script, run that through the do command
@@ -193,7 +202,7 @@ class OpRunner extends Service {
     }
 
     public findOpByShellScriptFile(args){
-        // Work out if we have a script file for the command
+        // Work out if we have a shell script file for the command
         def op = []
         return args.findResult([null, null], { arg ->
             op << arg
@@ -219,6 +228,37 @@ class OpRunner extends Service {
             LOG.debug("Not found shell script {0}", scriptName)
             return null
         })
+    }
+
+    public findOpByGroovyScriptFile(args)
+    {
+        // Work out if we have a groovy script file for the command
+        def op = []
+        return args.findResult([null, null], { arg ->
+            op << arg
+
+            def scriptName = op.join("-")+".groovy"
+
+            // Find the script on the path
+            if ( Gart.GART_PATH )
+            {
+                return Gart.GART_PATH.tokenize(":").findResult {
+                    def scriptFile = it+"/scripts/"+scriptName
+                    if ( new File(scriptFile).exists() )
+                    {
+                        // The script exists, return it
+                        LOG.debug("Found script {0}", scriptFile)
+                        return [ scriptFile, args.drop(op.size()) ]
+                    }
+                    LOG.debug("No file {0}", scriptFile)
+                    return null
+                }
+            }
+            
+            LOG.debug("Not found groovy script {0}", scriptName)
+            return null
+        })
+
     }
         
     public runOp(name, args){
