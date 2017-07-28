@@ -131,17 +131,26 @@ class OpRunner extends Service {
     }
     
     public perform(args){
+        // Find an op script for the op
         def (scriptName,scriptArgs) = findScriptInVocab(args)
         
         if(!scriptName)
             (scriptName,scriptArgs) = findScriptByPath(args)
         
         if(scriptName){
+            // We have an op script
             return runOp(scriptName, scriptArgs)
-        }else{
-            LOG.error("I dont know how to {0}", args.join(" "))
-            return null
         }
+        
+        // There is no op script, do we have a shell script?
+        ( scriptName , scriptArgs ) = findOpByShellScriptFile(args)
+        if ( scriptName ){
+            // Found a shell script, run that through the do command
+            return runOp("do.groovy", [ scriptName, scriptArgs ].flatten())
+        }
+
+        LOG.error("I dont know how to {0}", args.join(" "))
+        return null
     }
     
     public findScriptInVocab(args){
@@ -180,6 +189,35 @@ class OpRunner extends Service {
             }
             
             return [name, args.drop(op.size())]
+        })
+    }
+
+    public findOpByShellScriptFile(args){
+        // Work out if we have a script file for the command
+        def op = []
+        return args.findResult([null, null], { arg ->
+            op << arg
+
+            def scriptName = op.join("-")+".sh"
+
+            // Find the script on the path
+            if ( Gart.GART_PATH )
+            {
+                return Gart.GART_PATH.tokenize(":").findResult {
+                    def scriptFile = it+"/scripts/"+scriptName
+                    if ( new File(scriptFile).exists() )
+                    {
+                        // The script exists, return it
+                        LOG.debug("Found script {0}", scriptFile)
+                        return [ scriptFile, args.drop(op.size()) ]
+                    }
+                    LOG.debug("No file {0}", scriptFile)
+                    return null
+                }
+            }
+            
+            LOG.debug("Not found shell script {0}", scriptName)
+            return null
         })
     }
         
