@@ -16,6 +16,16 @@ JAVA_OPTS="$JAVA_OPTS
 -Djava.util.logging.config.file=${GART_HOME}/etc/logging.properties"
 export GART_HOME CLASSPATH PATH JAVA_OPTS
 
+# Set up the gart path
+DEF_PATH="${GART_HOME}/src/main/groovy/gart:${GART_HOME}/src/main"
+if [ -n "${GART_PATH}" ]
+then
+    GART_PATH="${GART_PATH}:${DEF_PATH}"
+else
+    GART_PATH="${DEF_PATH}"
+fi
+export GART_PATH
+
 # Make sure we're groovy enough
 which groovy > /dev/null || {
     # Check if we know where it lives

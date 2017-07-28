@@ -142,7 +142,7 @@ class OpRunner extends Service {
             return runOp(scriptName, scriptArgs)
         }
         
-        // There is no op script, 
+        // There is no op script
         
         // Do we have a groovy script?
         ( scriptName , scriptArgs ) = findOpByGroovyScriptFile(args)
