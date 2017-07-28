@@ -20,6 +20,8 @@ import gart.control.*
 import gart.control.sh.Garsh
 import gart.log.*
 
+import java.util.concurrent.CountDownLatch
+
 /**
  * The main gart instance
  * @author deanydean
@@ -165,6 +167,28 @@ class Gart extends Communicator {
      */
     public void comm(String id, complete=null, args=null, params=[:]){
         new Comm(id).set("args", args).setAll(params).publish(complete)
+    }
+
+    /**
+     * Perform op $id with $args
+     * Returns the value returned by op $id.
+     */
+    def op(String id, args=null)
+    {
+        def completedLatch = new CountDownLatch(1)
+        def returnValue = null
+        
+        // Trigger the op
+        new Comm("op.$id")
+            .set("args", args)
+            .publish({
+                returnValue = it
+                completedLatch.countDown()
+            });
+
+        // Wait for the op to complete
+        completedLatch.await()
+        return returnValue
     }
 
     private static getConfig(){
